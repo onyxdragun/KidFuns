@@ -1,0 +1,58 @@
+@use './fonts';
+@use './settings' as *;
+
+* {
+  box-sizing: border-box;
+  margin:0;
+  padding:0;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body { 
+  font-size: 1.6rem;
+  font-family: 'Roboto', sans-serif;
+}
+
+.content-container {
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+
+.button {
+  background: $blue;
+  color: white;
+  border: none;
+  border-radius: 0.8rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    background: #357ABD;
+    box-shadow: 0rem 0.4rem 0.6rem rgba(0, 0, 0, 0.2);
+  }
+}
+
+.button-small {
+  font-size: 1.5rem;
+  padding: 0.5rem 1rem;
+  margin-left: 0.5rem;
+}
+
+input, select {
+  width: 30rem;
+}
+
+input {
+  border: 1px solid #ccc;
+  border-radius: 0.4rem;
+  font-size: 2rem;
+  height: 4rem;
+  padding: 0.5rem;
+}

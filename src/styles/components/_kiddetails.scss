@@ -1,0 +1,71 @@
+.kid-details__header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  >h1 {
+    margin-left: 2rem;
+  }
+  >span {
+    margin-right: 2rem;
+    font-size: 2rem;
+  }
+}
+
+.kid-details__data {
+  >h3 {
+    background: #bbb;
+    padding: 0.5rem 1rem;
+    color: #333;
+  }
+}
+
+.kid-details__transactions {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kid-details__transaction {
+  display: flex;
+  flex-direction: column;
+  >span {
+    font-size: 1.2rem;
+  }
+}
+
+.kid-details--edit {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    >div {
+      padding: .5rem;
+    }
+  }
+}
+
+.kid-details--edit__input {
+  font-size: 2rem;
+  padding: 0.5rem;
+}
+
+.kid-details--edit__button {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  > button {
+    font-size: 2rem;
+    margin: 0 .5rem;
+    width: 20rem;
+    @media (min-width: 768px) {
+      width: 8rem;
+      font-size: 1.5rem;
+    }
+  }
+}

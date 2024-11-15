@@ -1,0 +1,28 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+  border: 1px solid #bbb;
+  border-radius: .5rem;
+  margin-top: 1rem;
+  padding: 1rem;
+}
+.form-input {
+ display: flex;
+ justify-content: space-around;
+ gap: 1rem;
+
+ @media (max-width: 768px) {
+  flex-direction: column;
+ }
+}
+
+.form-input > label {
+  font-size: 2rem;
+  width: 25%;
+}
+.form-input > select {
+  font-size: 2rem;
+}
+

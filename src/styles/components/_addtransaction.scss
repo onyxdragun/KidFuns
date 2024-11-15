@@ -1,0 +1,41 @@
+.allowances__header {
+  display:flex;
+  justify-content: space-between;
+  background: #ddd;
+  padding: 1rem;
+  font-size: 2rem;
+  margin-top: 1.5rem;
+  >div {
+    font-weight: bold;
+  }
+}
+
+.allowances__noFam {
+  text-align:center;
+  margin-top: 2rem;
+}
+
+.allowances__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-top: 0;
+  padding: 1.4rem;
+  text-decoration: none;
+  color: #555;
+}
+
+.allowances--loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  font-weight: bold;
+  padding: 2rem;
+}
+
+.allowances__data {
+  font-size: 1.5em;
+  font-weight: bold;
+}

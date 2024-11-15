@@ -1,0 +1,27 @@
+.createfamily__container {
+  margin-bottom: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 0.4rem;
+  padding: 0.5rem;
+  >h2 {
+    margin-bottom: 2rem;
+  }
+}
+
+.createfamily__elements {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  >input {
+    font-size: 2rem;
+    height: 4rem;
+  }
+}
+
+.family__notice {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+}
