@@ -4,7 +4,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { ref, get } from 'firebase/database';
 
 import database from '../firebase/firebase.js';
-import { setUser, logoutUser } from '../store/authSlice.js';
+import { loginUser, logoutUser } from '../store/authSlice.js';
 
 const AuthListener = () => {
   const dispatch = useDispatch();
@@ -19,11 +19,10 @@ const AuthListener = () => {
 
           if (snapshot.exists()) {
             const userData = snapshot.val();
-            dispatch(setUser({
+            dispatch(loginUser({
               uid: user.uid,
               displayName: user.displayName,
               email: user.email,
-              familyId: userData.familyId,
             }));
           }
         } catch (error) {

@@ -3,10 +3,14 @@ import storage from "redux-persist/lib/storage";
 
 import allowanceReducer from "./allowanceSlice.js";
 import authReducer from "./authSlice.js";
+import familyReducer from "./familySlice.js";
+import kidsReducer from './kidsSlice.js';
 
 const appReducer = combineReducers({
   allowance: allowanceReducer,
   auth: authReducer,
+  family: familyReducer,
+  kids: kidsReducer,
 });
 
 const rootReducer = (state, action) => {

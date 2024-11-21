@@ -12,6 +12,25 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
+export const fetchFamilyByUserId = async (userId) => {
+  try {
+    const snapshot = await database
+                        .ref('families')
+                        .orderByChild('linkedAccounts')
+                        .equalTo(userId)
+                        .once('value');
+    if (snapshot.exists()) {
+      return snaptshot.val();
+    } else {
+      throw new Error("No family found for this user");
+    }
+
+  } catch (error) {
+    console.log("Error fetching fmaily: ", error);
+    throw error;
+  }
+};
+
 export const fetchAllKids = async (familyId) => {
   const kidsRef = ref(database, `families/${familyId}/kids`);
   const snapshot = await get(kidsRef);

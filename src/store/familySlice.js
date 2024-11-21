@@ -1,0 +1,52 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from 'axios';
+
+// Create async thunk to fetch family data
+export const fetchFamilyData = createAsyncThunk(
+  'family/fetchFamilyData',
+  async (userId, { rejectWithValue }) => {
+    console.log(userId);
+    try {
+      const response = await axios.get(`/api/families/${userId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+const initialState = {
+  family_id: null,
+  family_name: null,
+  loading: false,
+  error: null,
+};
+
+const familySlice = createSlice({
+  name: 'family',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchFamilyData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchFamilyData.fulfilled, (state, action) => {
+        state.family_id = action.payload.family_id;
+        state.family_name = action.payload.family_name;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(fetchFamilyData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      });
+  },
+});
+
+export const {setFamily, setLoading, setError} = familySlice.actions;
+
+export const selectFamily = (state) => state.family.family;
+
+export default familySlice.reducer;

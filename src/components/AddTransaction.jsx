@@ -1,62 +1,31 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { get, push, ref, update, child } from "firebase/database";
+import { useDispatch, useSelector } from "react-redux";
 
-import { fetchKids } from "../store/allowanceSlice";
-import database from '../firebase/firebase.js';
+import { addTransaction } from "../store/kidsSlice.js";
 
-const AddTransaction = ({ familyId }) => {
+const AddTransaction = ({ family_id }) => {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [selectedKidId, setSelectedKidId] = useState('');
+  const {kids, loading, error} = useSelector((state) => state.kids);
   const dispatch = useDispatch();
-  const kids = useSelector((state) => state.allowance.kids);
 
   const handleAmountChange = (e) => setAmount(e.target.value);
   const handleDescriptionChange = (e) => setDescription(e.target.value);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (amount && description) {
-      const transactionData = {
-        amount: parseFloat(amount),
-        description,
-        createdAt: Date.now()
-      };
 
+    if (amount && description && selectedKidId) {
       try {
-        // get currentBalance
-        const kidRef = ref(database, `families/${familyId}/kids/${selectedKidId}`);
-        const transactionRef = child(kidRef, 'transactions');
+        await dispatch(addTransaction({kidId: parseInt(selectedKidId), amount: parseFloat(amount), description}));
 
-        // Write new transaction
-        const newTransactionRef = await push(transactionRef, transactionData);
-        console.log("New transaction key: ", newTransactionRef.key);
-
-        const currentBalanceSnapshot = await get(child(kidRef, 'currentBalance'));
-        const currentBalance = currentBalanceSnapshot.exists() ? currentBalanceSnapshot.val() : 0;
-        const newBalance = currentBalance + transactionData.amount;
-        await update(kidRef, {
-          currentBalance: newBalance
-        });
-
-        // dispatch(addTransaction({
-        //   kidId: selectedKidId,
-        //   ...transactionData,
-        //   firebaseKey: newTransactionRef.key,
-        // }));
-
-        dispatch(fetchKids(familyId));
-
-        console.log("Transaction successfully written!");
+        setAmount('');
+        setDescription('');
       } catch (error) {
-        console.log("Error writing transaction to Firebase: ", error);
+        console.log("Error adding transaction: ", error);
       }
     }
-
-    setAmount('');
-    setDescription('');
   };
 
   return (
@@ -72,7 +41,7 @@ const AddTransaction = ({ familyId }) => {
           name="kid">
           <option></option>
           {Object.entries(kids).map(([key, kid]) => (
-            <option key={key} value={key}>{kid.name}</option>
+            <option key={kid.kid_id} value={kid.kid_id}>{kid.name}</option>
           ))}
         </select>
       </div>

@@ -2,34 +2,16 @@ import React, { useState } from 'react';
 import { ref, push, set } from 'firebase/database';
 
 import database from '../firebase/firebase.js';
+import { useSelector } from 'react-redux';
 
 const AddKid = ({ familyId }) => {
   const [kidName, setKidName] = useState('');
   const [allowanceRate, setAllowanceRate] = useState(0);
   const [startingBalance, setStartingBalance] = useState(0);
+  const { family_id, family_name, loading, error } = useSelector((state) => state.family);
 
   const handleAddKid = async () => {
-    try {
-      if (!kidName || !familyId) return;
-
-      const kidsRef = ref(database, `families/${familyId}/kids`);
-      const newKidRef = push(kidsRef);
-
-      await set(newKidRef, {
-        name: kidName,
-        allowanceRate: parseFloat(allowanceRate),
-        currentBalance: parseInt(startingBalance),
-        transactions: {}
-      });
-
-      console.log("Kid added successfully");
-      setKidName('');
-      setAllowanceRate(0);
-      setStartingBalance(0);
-
-    } catch (error) {
-      console.log('handleAddKid failed: ', error);
-    }
+    console.log({kidName, allowanceRate, startingBalance, family_id});
   }
 
   return (

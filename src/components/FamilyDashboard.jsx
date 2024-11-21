@@ -4,33 +4,41 @@ import { useDispatch, useSelector } from "react-redux";
 import CreateFamily from "./CreateFamily";
 import ListKids from "./ListKids";
 import AddKid from "./AddKid";
-import { fetchFamily } from "../store/allowanceSlice";
-import { selectFamilyId, selectFamilyName } from "../store/selectors";
+import { fetchFamilyData, setFamily, setLoading, setError, selectFamily } from '../store/familySlice.js';
+import { fetchKidsData } from "../store/kidsSlice";
 
 const FamilyDashboard = () => {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
-  const familyId = useSelector(selectFamilyId);
-  const familyName = useSelector(selectFamilyName);
+  const { family_id } = useSelector((state) => state.family);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (user && isAuthenticated && user.familyId) {
-      dispatch(fetchFamily(user.familyId));
+    if (user && isAuthenticated && family_id) {
+      console.log('Fetching Kids Data');
+      dispatch(fetchKidsData(family_id));
     }
-  }, [dispatch, user, isAuthenticated]);
+  }, [dispatch, user, isAuthenticated, family_id]);
+
+  useEffect(() => {
+    if (user) {
+      console.log('Fetching family data');
+      dispatch(fetchFamilyData(user.user_id));
+    }
+  }, [dispatch, user, family_id]);
+
 
   return (
     <div className="content-container">
-      {user && user.familyId ? (
+      {user && family_id ? (
         <div className="family__name">
           <ListKids />
         </div>
       ) : (
         <CreateFamily />
       )}
-      {user && user.familyId ? (
-        <AddKid familyId={familyId} />
+      {user && family_id ? (
+        <AddKid />
       ) : (
         <div className="family__notice">Need to Create a Family before adding children</div>
       )}

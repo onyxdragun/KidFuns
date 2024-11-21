@@ -4,14 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from 'uuid';
 
 import database from '../firebase/firebase.js';
-import { setUser } from "../store/authSlice.js";
 
 const CreateFamily = () => {
   const [familyName, setFamilyName] = useState('');
   const user = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
-  console.log(user);
 
   const handleCreateFamily = async () => {
     if (!familyName) return;
@@ -25,15 +22,20 @@ const CreateFamily = () => {
         // Family doesnt exist, add it to the DB
         await set(familyRef, {
           familyName,
+          linkedAccounts: [user.user.uid],
           kids: {}
         });
-      }
+      } else {
+        // Update linkedAccounts is applicable
+        const familyData = snapshot.val();
+        const linkedAccounts = familyData.linkedAccounts || [];
+        if (!linkedAccounts.includes(user.user.uid)) {
+          linkedAccounts.push(user.user.uid);
+        }
 
-      const userRef = ref(database, `users/${user.user.uid}`);
-      snapshot = await get(userRef);
-      if (snapshot.exists()) {
-        await update(userRef, {
-          familyId
+        await set(familyRef, {
+          ...familyData,
+          linkedAccounts,
         });
       }
     } catch (error) {

@@ -1,57 +1,62 @@
+import { format } from "date-fns";
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { fetchFamilyData } from "../store/familySlice";
 
-import { addWeeklyAllowance, fetchKids } from "../store/allowanceSlice";
+import { fetchKidsData } from "../store/kidsSlice";
 import AddTransaction from "./AddTransaction";
 
-const Dashboard = ({ familyId }) => {
-  const { kids, loading, error } = useSelector((state) => state.allowance);
+const Dashboard = () => {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { family_id, loading: familyLoading, error: famiyError } = useSelector((state) => state.family);
+  const { kids, loading: kidsLoading, error: kidsError } = useSelector((state) => state.kids);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (user && isAuthenticated && user.familyId) {
-      dispatch(fetchKids(user.familyId));
+    if (user && isAuthenticated && family_id) {
+      dispatch(fetchKidsData(family_id));
+    }
+  }, [dispatch, user, isAuthenticated, family_id]);
+
+  useEffect(() => {
+    console.log("Fetching family data");
+    if (user && isAuthenticated) {
+      dispatch(fetchFamilyData(user.user_id));
     }
   }, [dispatch, user, isAuthenticated]);
 
-  const handleAddAllowance = () => {
-    dispatch(addWeeklyAllowance());
-  };
-
-  if (error) return <p>Error: {error}</p>;
-
   return (
     <div className="content-container">
-      {user.familyId ? (
+      {family_id ? (
         <>
           <div className="allowances__header">
             <div>Kid</div>
             <div>Balance</div>
           </div>
-          {loading ? (
+          {familyLoading || kidsLoading ? (
             <div className="allowances--loading">
               Fetching Data...
             </div>
           ) : (
             <div>
-              {Object.entries(kids).map(([key, kid]) => (
-                <Link
-                  to={`/kid/${key}`}
-                  key={key}
-                  className="allowances__container"
-                >
-                  <h2 className="allowances__kidname">{kid.name}</h2>
-                  <div>
-                    <span className="allowances__data">${kid.currentBalance.toFixed(2)}</span>
-                  </div>
-
-                </Link>
-              ))}
+              {Object.entries(kids).map(([key, kid]) => {
+                return (
+                  <Link
+                    to={`/kid/${kid.kid_id}`}
+                    key={key}
+                    className="allowances__container"
+                  >
+                    <h2 className="allowances__kidname">{kid.name}</h2>
+                    <div>
+                      <span className="allowances__data">${kid.currentBalance.toFixed(2)}</span>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           )}
-          <AddTransaction familyId={familyId} />
+          <AddTransaction family_id={family_id} />
         </>
       ) : (
         <div className="content-container allowances__noFam">

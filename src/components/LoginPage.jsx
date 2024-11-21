@@ -1,10 +1,9 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { get, ref, set, child } from "firebase/database";
+import axios from 'axios';
 
-import database from '../firebase/firebase.js';
-import { setUser } from "../store/authSlice.js";
+import { loginUser } from "../store/authSlice.js";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -15,37 +14,32 @@ const LoginPage = () => {
     provider.setCustomParameters({
       prompt: 'select_account'
     });
-    
+
     try {
       const result = await signInWithPopup(auth, provider);
-      const {uid, displayName, email} = result.user;
-      let familyId = null;
+      const { uid, displayName, email } = result.user;
 
-      const userRef = ref(database, `users/${uid}`);
-      let snapshot = await get(userRef);
-      if (!snapshot.exists()) {
-        await set(userRef, {
-          name: displayName,
-          email,
-          createdAt: Date.now()
-        });
-        console.log("New user created with Google Login: ", displayName);
-      } else {
-        const user = snapshot.val();
-        console.log("Welcome back: ", displayName);
+      const response = await axios.post('/api/users/login', {
+        uid: uid,
+        email: email,
+        name: displayName,
+      });
 
-        dispatch(setUser({
-          uid,
-          email,
-          displayName,
-          familyId: user.familyId
-        }));
-      }
+      const userData = response.data;
+      dispatch(loginUser(userData));
     } catch (error) {
-      console.log("Error during Google login: ", error);
+      if (error.response) {
+        console.error('Error Response Data:', error.response.data);
+        console.error('Error Response Status:', error.response.status);
+        console.error('Error Response Headers:', error.response.headers);
+      } else if (error.request) {
+        console.error('Error Request:', error.request);
+      } else {
+        console.log("Error during Google login: ", error);
+      }
     }
   };
-  
+
   return (
     <div className="login content-container">
       <button className="button" onClick={handleLogin}>Sign in with Google</button>

@@ -1,19 +1,20 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { fetchKids } from "../store/allowanceSlice";
+import {fetchKidsData, fetchTransactions} from '../store/kidsSlice.js';
 
 const ListKids = () => {
 
-  const { kids, loading, error } = useSelector((state) => state.allowance);
+  const { kids } = useSelector((state) => state.kids);
   const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { family_id } = useSelector((state) => state.family);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (user && user.familyId && isAuthenticated) {
-      dispatch(fetchKids(user.familyId));
+    if (user && isAuthenticated && family_id) {
+      dispatch(fetchKidsData(family_id));
     }
-  }, [dispatch, user.familyId, isAuthenticated]);
+  }, [dispatch, user, isAuthenticated, family_id]);
 
   return (
     <div className="listkids__container">
