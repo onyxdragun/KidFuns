@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { getConnection } from '../db.js';
+import { logEvent } from '../utils/logs.js';
 
 const router = express.Router();
 
@@ -39,7 +40,7 @@ router.post('/checkKidExists', async (req, res) => {
 });
 
 router.post('/addKid', async (req, res) => {
-  const { kidname, familyId, allowanceRate, currentBalance } = req.body;
+  const { kidname, familyId, allowanceRate, currentBalance, userId } = req.body;
   let connection;
 
   try {
@@ -75,6 +76,8 @@ router.post('/addKid', async (req, res) => {
     );
 
     result = await connection.commit();
+
+    await logEvent(userId, 'ADD_KID', {kid_id: parseInt(kidId), currentBalance, allowanceRate}, req.ip);
 
     res.status(201).json({
       success: true,
@@ -169,7 +172,7 @@ router.get('/transactions/:kidId', async (req, res) => {
 
 // Add New Transaction
 router.post('/transactions', async (req, res) => {
-  const { kidId, amount, description } = req.body;
+  const { userId, kidId, amount, description } = req.body;
   let connection;
 
   try {
@@ -200,6 +203,7 @@ router.post('/transactions', async (req, res) => {
     await connection.commit();
 
     if (transaction && transaction.length > 0) {
+      await logEvent(userId, 'ADD_TRANSACTION', {kid_id: kidId, description, amount}, req.ip);
       const transactionData = transaction[0];
       const { currentBalance, ...transactionWithoutBalance } = transactionData;
 
@@ -236,7 +240,7 @@ router.post('/transactions', async (req, res) => {
 // Update transactions and current balance
 router.put('/transactions/update/:transaction_id', async (req, res) => {
   const { transaction_id } = req.params;
-  const { kid_id, amount, description } = req.body;
+  const { kid_id, amount, description, user_id } = req.body;
   let connection;
 
   try {
@@ -245,7 +249,7 @@ router.put('/transactions/update/:transaction_id', async (req, res) => {
     await connection.beginTransaction();
 
     const currentTransaction = await connection.execute(
-      `SELECT amount FROM transactions WHERE transaction_id = ?`,
+      `SELECT * FROM transactions WHERE transaction_id = ?`,
       [transaction_id]
     );
 
@@ -258,6 +262,7 @@ router.put('/transactions/update/:transaction_id', async (req, res) => {
     }
 
     const oldAmount = parseFloat(currentTransaction[0].amount);
+    const oldDescription = currentTransaction[0].description;
     const delta = parseFloat(amount) - oldAmount;
 
     const result = await connection.execute(
@@ -289,6 +294,15 @@ router.put('/transactions/update/:transaction_id', async (req, res) => {
     );
 
     await connection.commit();
+    const eventData = {
+      kid_id,
+      oldAmount: oldAmount,
+      newAmount: amount,
+      newBalance: updatedBalance[0].currentBalance,
+      oldDescription,
+      newDescription: description,
+    }
+    await logEvent(user_id, "UPDATE_TRANSACTION", eventData, req.ip);
     res.json({
       success: true,
       message: 'Transaction and balance updated successfully',

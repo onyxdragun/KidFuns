@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { getConnection } from '../db.js';
+import { logEvent } from '../utils/logs.js';
 
 const router = express.Router();
 
@@ -9,8 +10,6 @@ router.get('/', async (req, res) => {
   try {
     connection = await getConnection();
     const rows = await connection.query('SELECT * FROM users');
-    console.log("get users/");
-    console.log(rows);
     res.json(rows);
   } catch (error) {
     console.error('Error fetching users: ', error);
@@ -35,9 +34,9 @@ router.post("/login", async (req, res) => {
       "SELECT * FROM users WHERE uid = ?",
       [uid]
     );
-    console.log('existingUser');
-    console.log(existingUser);
+
     if (existingUser.length > 0) {
+      await logEvent(existingUser[0].user_id, 'USER_LOGIN', {email, name}, req.ip);
       return res.status(200).json({
         success: true,
         message: `Welcome back ${existingUser[0].name}`,
@@ -53,9 +52,11 @@ router.post("/login", async (req, res) => {
       const userId = result.insertId;
 
       // Retreive new user
-      const newUser = await connection.query("SELECT * FROM users WHERE user_id = ?", [result.insertId]);
-      console.log('newUser');
-      console.log(newUser);
+      const newUser = await connection.query(
+        "SELECT * FROM users WHERE user_id = ?",
+        [userId]
+      );
+      await logEvent(userId, 'NEW_USER', {user_id: userId, email, name }, req.ip);
       res.status(201).json({
         success: true,
         message: 'Added new user',

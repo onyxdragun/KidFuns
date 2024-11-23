@@ -38,9 +38,10 @@ export const fetchTransactions = createAsyncThunk(
 
 export const addTransaction = createAsyncThunk(
   'kids/addTransaction',
-  async ({ kidId, amount, description }, { rejectWithValue }) => {
+  async ({ userId, kidId, amount, description }, { rejectWithValue }) => {
     try {
       const response = await axios.post('/api/kids/transactions', {
+        userId,
         kidId,
         amount,
         description,
@@ -55,13 +56,14 @@ export const addTransaction = createAsyncThunk(
 
 export const addKid = createAsyncThunk(
   'kids/addKid',
-  async({kidName, allowanceRate, startingBalance, family_id}, {rejectWithValue}) => {
+  async({kidName, allowanceRate, startingBalance, family_id, user_id}, {rejectWithValue}) => {
     try {
       const response = await axios.post('/api/kids/addKid', {
         kidname: kidName,
         familyId: parseInt(family_id),
         allowanceRate: parseFloat(allowanceRate),
-        currentBalance: parseFloat(startingBalance)
+        currentBalance: parseFloat(startingBalance),
+        userId: user_id
       });
 
       if (response.data.success) {
@@ -77,12 +79,13 @@ export const addKid = createAsyncThunk(
 
 export const updateTransaction = createAsyncThunk(
   'kids/updateTransaction',
-  async({transaction_id, kid_id, amount, description}, {rejectWithValue}) => {
+  async({transaction_id, kid_id, amount, description, user_id}, {rejectWithValue}) => {
     try {
       const response = await axios.put(`/api/kids/transactions/update/${transaction_id}`, {
         kid_id,
         amount,
         description,
+        user_id
       });
       if (response.data.success) {
         return response.data;

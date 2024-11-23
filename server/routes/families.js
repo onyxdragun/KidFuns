@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { getConnection } from '../db.js';
+import { logEvent } from '../utils/logs.js';
 
 const router = express.Router();
 
@@ -45,6 +46,8 @@ router.post('/create', async (req, res) => {
       'INSERT INTO linked_accounts (family_id, user_id) VALUES (?, ?)',
       [family_id, user_id]
     );
+
+    await logEvent(user_id, "CREATE_FAMILY", { user_id: user_id, family_name }, req.ip);
 
     res.status(201).json({
       success: true,

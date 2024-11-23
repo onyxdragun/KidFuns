@@ -70,6 +70,7 @@ const KidDetails = () => {
           kid_id: kid.kid_id,
           amount: editedTransaction.amount,
           description: editedTransaction.description,
+          user_id: user.user_id
         };
 
         await dispatch(updateAndFetchTransactions(updatedData));
@@ -129,7 +130,7 @@ const KidDetails = () => {
                       <span>{format(parseISO(transaction.transaction_date), 'MMMM d, yyyy')}</span>
                     </div>
                     <div className="kid-details__amount">
-                      ${transaction.amount.toFixed(2)}
+                      ${parseFloat(transaction.amount).toFixed(2)}
                       <button
                         className="button button-small"
                         onClick={() => handleEditClick(transaction)}>Edit</button>

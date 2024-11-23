@@ -8,9 +8,10 @@ const AddKid = ({ familyId }) => {
   const [allowanceRate, setAllowanceRate] = useState(0);
   const [startingBalance, setStartingBalance] = useState(0);
   const { family_id, family_name, loading, error } = useSelector((state) => state.family);
+  const { user } = useSelector((state) => state.auth);
   const kids = useSelector((state) => state.kids);
   const dispatch = useDispatch();
-
+  
   const handleAddKid = async () => {
     try {
       if (family_id) {
@@ -20,9 +21,9 @@ const AddKid = ({ familyId }) => {
             allowanceRate,
             startingBalance,
             family_id,
+            user_id: user.user_id
           })
         );
-        console.log(response);
         if (response.payload.success) {
           console.log(response.payload.message);
           dispatch(fetchKidsData(family_id));
@@ -30,7 +31,7 @@ const AddKid = ({ familyId }) => {
           console.log(response.payload.message);
         }
       } else {
-        console.log("family id is required");
+        console.log("Family ID invalid");
       }
 
     } catch (error) {

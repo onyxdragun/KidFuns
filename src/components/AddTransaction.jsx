@@ -7,7 +7,8 @@ const AddTransaction = ({ family_id }) => {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [selectedKidId, setSelectedKidId] = useState('');
-  const {kids, loading, error} = useSelector((state) => state.kids);
+  const { kids, loading, error } = useSelector((state) => state.kids);
+  const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const handleAmountChange = (e) => setAmount(e.target.value);
@@ -18,7 +19,7 @@ const AddTransaction = ({ family_id }) => {
 
     if (amount && description && selectedKidId) {
       try {
-        await dispatch(addTransaction({kidId: parseInt(selectedKidId), amount: parseFloat(amount), description}));
+        await dispatch(addTransaction({ userId: user.user_id, kidId: parseInt(selectedKidId), amount: parseFloat(amount), description }));
 
         setAmount('');
         setDescription('');
