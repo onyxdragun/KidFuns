@@ -17,10 +17,19 @@ export const fetchKidsData = createAsyncThunk(
 export const fetchTransactions = createAsyncThunk(
   'kids/fetchTransactions',
   async (kidId, { rejectWithValue }) => {
-    console.log('Called fetchTransactions');
     try {
       const response = await axios.get(`/api/kids/transactions/${kidId}`);
-      return { kidId, transactions: response.data };
+      if (response.data.success) {
+        return {
+          kidId,
+          transactions: response.data.transactions
+        }
+      } else {
+        return {
+          kidId, 
+          transactions: []
+        };
+      }
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -44,10 +53,65 @@ export const addTransaction = createAsyncThunk(
   }
 );
 
+export const addKid = createAsyncThunk(
+  'kids/addKid',
+  async({kidName, allowanceRate, startingBalance, family_id}, {rejectWithValue}) => {
+    try {
+      const response = await axios.post('/api/kids/addKid', {
+        kidname: kidName,
+        familyId: parseInt(family_id),
+        allowanceRate: parseFloat(allowanceRate),
+        currentBalance: parseFloat(startingBalance)
+      });
+
+      if (response.data.success) {
+        return response.data;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch(error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const updateTransaction = createAsyncThunk(
+  'kids/updateTransaction',
+  async({transaction_id, kid_id, amount, description}, {rejectWithValue}) => {
+    try {
+      const response = await axios.put(`/api/kids/transactions/update/${transaction_id}`, {
+        kid_id,
+        amount,
+        description,
+      });
+      if (response.data.success) {
+        return response.data;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.response.message);
+    }
+  }
+);
+
+export const updateAndFetchTransactions = (updatedData) => async (dispatch) => {
+  try{
+    const response = await dispatch(updateTransaction(updatedData));
+
+    if (response.payload.success) {
+      await dispatch(fetchTransactions(updatedData.kid_id));
+    }
+  } catch (error) {
+    console.log('Error updated and fetching transactions: ', error);
+  }
+};
+
 const initialState = {
   kids: [],
   loading: false,
   error: null,
+  message: null,
 };
 
 const kidsSlice = createSlice({
@@ -60,19 +124,26 @@ const kidsSlice = createSlice({
       .addCase(fetchKidsData.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.message = null;
       })
       .addCase(fetchKidsData.fulfilled, (state, action) => {
         state.loading = false;
-        state.kids = action.payload.map((kid) => ({
-          ...kid,
-          currentBalance: parseFloat(kid.currentBalance),
-          allowanceRate: parseFloat(kid.allowanceRate),
-          transactions: [],
-        }));
+        if (action.payload.success) {
+          state.message = null;
+          state.kids = action.payload.kids.map((kid) => ({
+            ...kid,
+            currentBalance: parseFloat(kid.currentBalance),
+            allowanceRate: parseFloat(kid.allowanceRate),
+            transactions: [],
+          }));
+        } else {
+          state.kids = [];
+          state.message = action.payload.message;
+        }
       })
       .addCase(fetchKidsData.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload.message;
       })
 
       // Handle fetchTransactions
@@ -81,10 +152,9 @@ const kidsSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchTransactions.fulfilled, (state, action) => {
-        const { kidId, transactions } = action.payload;
-        console.log(transactions);
+        const { kidId, transactions, message } = action.payload;
         state.loading = false;
-
+        state.message = message;
         const parsedTransactions = Object.entries(transactions).reduce((acc, [key, transaction]) => {
           acc[key] = {
             ...transaction,
@@ -107,11 +177,13 @@ const kidsSlice = createSlice({
       .addCase(addTransaction.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.message = null;
         console.log("addTransaction pending..");
       })
       .addCase(addTransaction.fulfilled, (state, action) => {
         const { kidId, currentBalance, transaction, message } = action.payload;
         state.loading = false;
+        state.message = message;
 
         const kid = state.kids.find((kid) => kid.kid_id === kidId);
         if (kid) {
@@ -129,7 +201,42 @@ const kidsSlice = createSlice({
       })
       .addCase(addTransaction.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload.message;
+      })
+      // Handle addKid
+      .addCase(addKid.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(addKid.fulfilled, (state, action) => {
+        console.log('addKid Payload: ', action.payload);
+        state.loading = false;
+      })
+      .addCase(addKid.rejected, (state, action) => {
+        state.loading = false,
         state.error = action.payload;
+      })
+      // Handle updateTransaction
+      .addCase(updateTransaction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(updateTransaction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.message = action.payload.message;
+
+        const kid = state.kids.find((kid) => kid.kid_id === action.payload.kid_id);
+        if (kid) {
+          kid.currentBalance = parseFloat(action.payload.currentBalance);
+          kid.transactions = action.payload.transactions;
+        }
+      })
+      .addCase(updateTransaction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
       });
   },
 });

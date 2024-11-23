@@ -20,15 +20,22 @@ const Dashboard = () => {
   }, [dispatch, user, isAuthenticated, family_id]);
 
   useEffect(() => {
-    console.log("Fetching family data");
     if (user && isAuthenticated) {
       dispatch(fetchFamilyData(user.user_id));
     }
   }, [dispatch, user, isAuthenticated]);
 
+  if (!family_id) {
+    return (
+      <div className="content-container allowances__noFam">
+        <h2>Please create a Family</h2>
+      </div>
+    );
+  }
+
   return (
     <div className="content-container">
-      {family_id ? (
+      {(kids.length > 0) ? (
         <>
           <div className="allowances__header">
             <div>Kid</div>
@@ -60,7 +67,7 @@ const Dashboard = () => {
         </>
       ) : (
         <div className="content-container allowances__noFam">
-          <h2>Please create a Family</h2>
+          <h2>Please <Link to="familydashboard">add children</Link> to your account</h2>
         </div>
       )}
     </div>

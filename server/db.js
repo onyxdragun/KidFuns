@@ -1,6 +1,6 @@
 import mariadb from 'mariadb';
 
-import { loadEnvConfig } from './config';
+import { loadEnvConfig } from './config.js';
 
 loadEnvConfig();
 

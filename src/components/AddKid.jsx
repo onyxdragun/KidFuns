@@ -1,17 +1,41 @@
 import React, { useState } from 'react';
-import { ref, push, set } from 'firebase/database';
+import { useSelector, useDispatch } from 'react-redux';
 
-import database from '../firebase/firebase.js';
-import { useSelector } from 'react-redux';
+import { addKid, fetchKidsData } from '../store/kidsSlice.js';
 
 const AddKid = ({ familyId }) => {
   const [kidName, setKidName] = useState('');
   const [allowanceRate, setAllowanceRate] = useState(0);
   const [startingBalance, setStartingBalance] = useState(0);
   const { family_id, family_name, loading, error } = useSelector((state) => state.family);
+  const kids = useSelector((state) => state.kids);
+  const dispatch = useDispatch();
 
   const handleAddKid = async () => {
-    console.log({kidName, allowanceRate, startingBalance, family_id});
+    try {
+      if (family_id) {
+        const response = await dispatch(
+          addKid({
+            kidName,
+            allowanceRate,
+            startingBalance,
+            family_id,
+          })
+        );
+        console.log(response);
+        if (response.payload.success) {
+          console.log(response.payload.message);
+          dispatch(fetchKidsData(family_id));
+        } else {
+          console.log(response.payload.message);
+        }
+      } else {
+        console.log("family id is required");
+      }
+
+    } catch (error) {
+      console.log("Something went wrong");
+    }
   }
 
   return (

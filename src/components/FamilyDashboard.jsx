@@ -9,7 +9,7 @@ import { fetchKidsData } from "../store/kidsSlice";
 
 const FamilyDashboard = () => {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
-  const { family_id } = useSelector((state) => state.family);
+  const { family_id, family_name } = useSelector((state) => state.family);
 
   const dispatch = useDispatch();
 
@@ -22,7 +22,6 @@ const FamilyDashboard = () => {
 
   useEffect(() => {
     if (user) {
-      console.log('Fetching family data');
       dispatch(fetchFamilyData(user.user_id));
     }
   }, [dispatch, user, family_id]);

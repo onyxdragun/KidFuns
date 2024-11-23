@@ -1,47 +1,30 @@
 import React, { useState } from "react";
-import { get, ref, set, update } from 'firebase/database';
 import { useDispatch, useSelector } from "react-redux";
-import { v4 as uuidv4 } from 'uuid';
 
-import database from '../firebase/firebase.js';
+import { createFamily, fetchFamilyData } from "../store/familySlice";
 
 const CreateFamily = () => {
   const [familyName, setFamilyName] = useState('');
-  const user = useSelector((state) => state.auth);
+  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
   const handleCreateFamily = async () => {
-    if (!familyName) return;
-
+    if (!familyName && !user.user_id) return;
+      
     try {
-      const familyId = uuidv4();
-      const familyRef = ref(database, `families/${familyId}`);
-      let snapshot = await get(familyRef);
-
-      if (!snapshot.exists()) {
-        // Family doesnt exist, add it to the DB
-        await set(familyRef, {
-          familyName,
-          linkedAccounts: [user.user.uid],
-          kids: {}
-        });
+      const response = await dispatch(createFamily({
+        family_name: familyName,
+        user_id: parseInt(user.user_id)
+      }));
+      if (response.payload.success) {
+        console.log(response.payload.message);
+        dispatch(fetchFamilyData(response.payload.family_id));
       } else {
-        // Update linkedAccounts is applicable
-        const familyData = snapshot.val();
-        const linkedAccounts = familyData.linkedAccounts || [];
-        if (!linkedAccounts.includes(user.user.uid)) {
-          linkedAccounts.push(user.user.uid);
-        }
-
-        await set(familyRef, {
-          ...familyData,
-          linkedAccounts,
-        });
+        console.log("Family not created: ", response.payload.message);
       }
     } catch (error) {
       console.log("Error CreateFamily: ", error);
     }
-    console.log("Family created successfully");
   }
 
   return (

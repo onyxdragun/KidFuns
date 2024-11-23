@@ -1,5 +1,4 @@
 import express from 'express';
-import { connect } from 'react-redux';
 
 import { getConnection } from '../db.js';
 
@@ -16,13 +15,22 @@ router.post('/checkKidExists', async (req, res) => {
     );
 
     if (existingKid.length > 0) {
-      return res.status(400).json({ error: 'Child already exists in this family' });
+      return res.status(200).json({
+        success: true,
+        message: 'Child already exists in this family'
+      });
     }
 
-    return res.status(200).json({ message: 'Kid does not exist, can be added.' });
+    return res.status(200).json({
+      success: false,
+      message: 'Child does not currently exist.'
+    });
   } catch (error) {
     console.error('Error checking if kid exists:', error);
-    res.status(500).json({ error: 'Failed to check kid existence' });
+    res.status(500).json({
+      success: false,
+      message: 'Failed to check kid existence'
+    });
   } finally {
     if (connection) {
       connection.release();
@@ -31,7 +39,7 @@ router.post('/checkKidExists', async (req, res) => {
 });
 
 router.post('/addKid', async (req, res) => {
-  const { kidname, familyId, allowanceRate, startingBalance } = req.body;
+  const { kidname, familyId, allowanceRate, currentBalance } = req.body;
   let connection;
 
   try {
@@ -44,25 +52,44 @@ router.post('/addKid', async (req, res) => {
     );
 
     if (existingKid.length > 0) {
-      return res.status(400).json({ error: 'Child already exists in this family.' });
+      return res.status(200).json({
+        success: false,
+        message: 'Child already exists in this family.'
+      });
     }
 
+    await connection.beginTransaction();
+
     // If the kid does not exist, insert the new kid into the kids table
-    const result = await connection.query(
+    let result = await connection.execute(
       'INSERT INTO kids (name, allowanceRate, currentBalance, family_id) VALUES (?, ?, ?, ?)',
-      [kidname, allowanceRatestartingBalance, familyId]
+      [kidname, allowanceRate, currentBalance, familyId]
     );
 
+    const kidId = result.insertId;
+
+    result = await connection.execute(
+      `INSERT INTO transactions (kid_id, amount, description, transaction_date)
+        VALUES (?, ?, ?, NOW())`,
+      [kidId, currentBalance, "Starting Balance"]
+    );
+
+    result = await connection.commit();
+
     res.status(201).json({
+      success: true,
       message: 'Child added successfully.',
-      kidId: Number(result.insertId), // Get the ID of the newly inserted kid
+      kidId: Number(kidId), // Get the ID of the newly inserted kid
     });
 
   } catch (error) {
     console.error('Error adding child: ', error);
-    res.status(500).json({ error: 'Failed to add child' });
+    res.status(500).json({
+      success: false,
+      message: 'Failed to add child'
+    });
   } finally {
-    if (connetion) {
+    if (connection) {
       connection.release();
     }
   }
@@ -80,12 +107,22 @@ router.get('/:familyId', async (req, res) => {
     );
 
     if (kids.length === 0) {
-      return res.status(404).json({ message: 'No children found for this family' });
+      return res.status(200).json({
+        success: false,
+        message: 'No children found for this family'
+      });
     }
-    res.status(200).json(kids);
+    res.status(200).json({
+      success: true,
+      message: '',
+      kids
+    });
   } catch (error) {
     console.error('Error fetching children: ', error);
-    res.status(500).json({ error: 'Failed to fetch children' });
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch children'
+    });
   } finally {
     if (connection) {
       connection.release();
@@ -105,14 +142,24 @@ router.get('/transactions/:kidId', async (req, res) => {
     );
 
     if (transactions.length === 0) {
-      return res.status(400).json({ message: 'No transactions found for child' });
+      return res.status(200).json({
+        success: false,
+        message: 'No transactions found for child'
+      });
     }
 
-    res.status(200).json(transactions);
+    res.status(200).json({
+      success: true,
+      message: "Child has transactions",
+      transactions
+    });
 
   } catch (error) {
     console.error('Error fetching child transactions: ', error);
-    res.status(500).json({ error: 'Failed to fetch transactions for child' });
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch transactions for child'
+    });
   } finally {
     if (connection) {
       connection.release();
@@ -156,22 +203,106 @@ router.post('/transactions', async (req, res) => {
       const transactionData = transaction[0];
       const { currentBalance, ...transactionWithoutBalance } = transactionData;
 
-      res.status(200).json({
+      res.status(201).json({
+        success: true,
         message: 'Transaction added successfully and balance updated',
         currentBalance: currentBalance,
         transaction: transactionWithoutBalance,
         kidId
       });
-      
+
     } else {
-      res.status(404).json({message: 'Something went wrong'});
+      res.status(500).json({
+        success: false,
+        message: 'Something went wrong'
+      });
       console.error('Something went wrong');
     }
   } catch (error) {
     if (connection) await connection.rollback();
     console.error('Error adding transaction: ', error);
 
-    res.status(500).json({ message: 'Error adding transaction: ', error });
+    res.status(500).json({
+      success: false,
+      message: 'Error adding transaction: ', error
+    });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+});
+
+// Update transactions and current balance
+router.put('/transactions/update/:transaction_id', async (req, res) => {
+  const { transaction_id } = req.params;
+  const { kid_id, amount, description } = req.body;
+  let connection;
+
+  try {
+    connection = await getConnection();
+
+    await connection.beginTransaction();
+
+    const currentTransaction = await connection.execute(
+      `SELECT amount FROM transactions WHERE transaction_id = ?`,
+      [transaction_id]
+    );
+
+    if (!currentTransaction.length) {
+      await connection.rollback();
+      return res.status(200).json({
+        success: false,
+        message: 'Transaction not found'
+      });
+    }
+
+    const oldAmount = parseFloat(currentTransaction[0].amount);
+    const delta = parseFloat(amount) - oldAmount;
+
+    const result = await connection.execute(
+      'UPDATE transactions SET amount = ?, description = ? WHERE transaction_id = ?',
+      [amount, description, transaction_id]
+    );
+
+    const updateBalance = await connection.execute(
+      `UPDATE kids SET currentBalance = currentBalance + ? WHERE kid_id = ?`,
+      [delta, kid_id]
+    );
+
+    if (updateBalance.affectedRows === 0) {
+      await connection.rollback();
+      return res.status(200).json({
+        success: false,
+        message: 'Failed to update current balance',
+      });
+    }
+
+    const updatedBalance = await connection.execute(
+      `SELECT currentBalance FROM kids WHERE kid_id = ?`,
+      [kid_id]
+    );
+
+    const updatedTransactions = await connection.execute(
+      `SELECT * FROM transactions WHERE kid_id = ? ORDER BY transaction_date DESC`,
+      [kid_id]
+    );
+
+    await connection.commit();
+    res.json({
+      success: true,
+      message: 'Transaction and balance updated successfully',
+      kid_id: kid_id,
+      transactions: updatedTransactions,
+      currentBalance: updatedBalance[0].currentBalance
+    });
+
+  } catch (error) {
+    await connection.rollback();
+    res.status(500).json({
+      success: false,
+      message: `Error updating transaction and current balance: ${error}`,
+    });
   } finally {
     if (connection) {
       connection.release();

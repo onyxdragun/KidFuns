@@ -20,37 +20,40 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(checkAuthState.fulfilled, (state) => {
-
+    builder
+    .addCase(checkAuthState.fulfilled, (state, action) => {
+      console.log(action);
     });
   },
 });
 
-export const {loginUser, logoutUser} = authSlice.actions;
+export const { loginUser, logoutUser } = authSlice.actions;
 export default authSlice.reducer;
 
-export const checkAuthState = createAsyncThunk('auth/checkAuthState', async(_, {dispatch}) => {
-  const auth = getAuth();
-  return new Promise((resolve, reject) => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (user) => {
-        if (user) {
-          dispatch(loginUser({
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            familyId: user.familyId,
-          }));
-        } else {
-          dispatch(logoutUser());
+export const checkAuthState = createAsyncThunk(
+  'auth/checkAuthState',
+  async (_, { dispatch }) => {
+    const auth = getAuth();
+    return new Promise((resolve, reject) => {
+      const unsubscribe = onAuthStateChanged(
+        auth,
+        (user) => {
+          if (user) {
+            dispatch(loginUser({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              familyId: user.familyId,
+            }));
+          } else {
+            dispatch(logoutUser());
+          }
+          resolve();
+        },
+        (error) => {
+          reject(error);
         }
-        resolve();
-      },
-      (error) => {
-        reject(error);
-      }
-    );
-    return() => unsubscribe();
+      );
+      return () => unsubscribe();
+    });
   });
-});

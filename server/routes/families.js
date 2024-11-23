@@ -16,7 +16,10 @@ router.post('/create', async (req, res) => {
     );
 
     if (results.length > 0) {
-      return res.status(400).json({ error: 'Family name already exists' });
+      return res.status(200).json({
+        success: false,
+        message: 'Family name already exists'
+      });
     }
 
     const result = await connection.query(
@@ -32,7 +35,10 @@ router.post('/create', async (req, res) => {
     );
 
     if (existingLink.length > 0) {
-      return res.status(400).json({ error: 'User is already linked to this family' });
+      return res.status(200).json({
+        succes: false,
+        message: 'User is already linked to this family'
+      });
     }
 
     await connection.query(
@@ -41,13 +47,17 @@ router.post('/create', async (req, res) => {
     );
 
     res.status(201).json({
+      success: true,
       family_id,
       family_name,
       message: 'Family created and linked to user successfully',
     });
   } catch (error) {
     console.error('Error creating family:', error);
-    res.status(500).json({ error: 'Failed to create family' });
+    res.status(500).json({
+      sucess: false,
+      message: 'Failed to create family: ', error
+    });
   } finally {
     if (connection) {
       connection.release();
@@ -69,10 +79,11 @@ router.get('/:userId', async (req, res) => {
       [userId]
     );
 
-    console.log(rows);
-
     if (rows.length === 0) {
-      return res.status(404).json({ error: 'No family found for that user' });
+      return res.status(200).json({
+        success: false,
+        message: 'No family found for that user'
+      });
     }
 
     const family = rows[0];
@@ -82,16 +93,21 @@ router.get('/:userId', async (req, res) => {
     );
 
     const familyData = {
+      success: true,
+      message: 'Found family',
       family_id: family.family_id,
       family_name: family.family_name,
       kids,
     };
 
-    res.status(200).json(familyData);
+    res.status(201).json(familyData);
 
   } catch (error) {
     console.error('Error fetching family data:', error);
-    res.status(500).json({ error: 'Failed to fetch family data' });
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch family data'
+    });
   } finally {
     if (connection) {
       connection.release();

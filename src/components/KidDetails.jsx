@@ -3,11 +3,12 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { format, parseISO } from "date-fns";
 
-import { fetchTransactions } from "../store/kidsSlice.js";
+import { fetchTransactions, updateAndFetchTransactions } from "../store/kidsSlice.js";
 
 const KidDetails = () => {
-  const { kids, loading, error } = useSelector((state) => state.kids);
+  const { kids, loading, error, message } = useSelector((state) => state.kids);
   const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { family_id } = useSelector((state) => state.family);
   const { id } = useParams();
   const dispatch = useDispatch();
   const [editingTransaction, setEditingTransaction] = useState(null);
@@ -16,7 +17,7 @@ const KidDetails = () => {
   const [editedTransaction, setEditedTransaction] = useState({
     amount: 0,
     description: '',
-    key: '',
+    transaction_id: '',
     kidId: ''
   });
 
@@ -43,8 +44,8 @@ const KidDetails = () => {
     setEditedTransaction({
       amount: transaction.amount,
       description: transaction.description,
-      key: transaction.key,
-      kidId: kid.key
+      transaction_id: transaction.transaction_id,
+      kidId: kid.kid_id
     });
   };
 
@@ -63,16 +64,15 @@ const KidDetails = () => {
 
   const handleSave = async () => {
     if (editingTransaction) {
-
-
       try {
+        const updatedData = {
+          transaction_id: editedTransaction.transaction_id,
+          kid_id: kid.kid_id,
+          amount: editedTransaction.amount,
+          description: editedTransaction.description,
+        };
 
-
-        console.log("editedTransactionKey: ", editedTransaction.key);
-
-
-
-
+        await dispatch(updateAndFetchTransactions(updatedData));
 
         setEditingTransaction(null);
       } catch (error) {
@@ -91,10 +91,9 @@ const KidDetails = () => {
         <h3>Transaction History</h3>
         {kid.transactions && (Object.entries(kid.transactions).length > 0) ? (
           Object.entries(kid.transactions).map(([transactionKey, transaction]) => {
-            console.log(transaction);
             return (
               <div key={transactionKey} className="kid-details__transactions">
-                {editingTransaction && editingTransaction.key === transactionKey ? (
+                {editingTransaction && editingTransaction.transaction_id === transaction.transaction_id ? (
                   <div className="kid-details--edit">
                     <div>
                       <input
