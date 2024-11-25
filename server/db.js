@@ -1,4 +1,5 @@
 import mariadb from 'mariadb';
+import cron from 'node-cron';
 
 import { loadEnvConfig } from './config.js';
 
@@ -21,3 +22,8 @@ export async function getConnection() {
     throw error;
   }
 }
+
+// cron.schedule('1 0 * * 5', () => {
+//   console.log("Executing weekly allowance update on all kids");
+//   updateAllKidsBalances();
+// });

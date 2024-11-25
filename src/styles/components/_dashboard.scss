@@ -1,7 +1,11 @@
+@use '../settings' as *;
+
 .allowances__header {
   display:flex;
   justify-content: space-between;
-  background: #ddd;
+  background: $teal;
+  color: white;
+  border-radius: 0.5rem 0.5rem 0 0;
   padding: 1rem;
   font-size: 2rem;
   margin-top: 1.5rem;
@@ -12,16 +16,24 @@
 
 .allowances__noFam {
   text-align:center;
+  border: 1px solid $teal;
+  border-radius: 0.5rem;
   margin-top: 2rem;
+  > h2 {
+    padding: 1rem;
+    background: $teal;
+    color: white;
+  }
 }
 
 .allowances__container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #ccc;
+  border: 1px solid $teal;
   border-top: 0;
   padding: 1.4rem;
+  background: $lightteal;
   text-decoration: none;
   color: #555;
 }

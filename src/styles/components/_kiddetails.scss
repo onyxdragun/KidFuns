@@ -1,34 +1,47 @@
+@use '../settings' as *;
+
 .kid-details__header {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  border: 1px solid $teal;
+  border-radius: 0.5rem;
   margin-bottom: 2rem;
+  padding: 1rem 0;
+  background: $teal;
+  color: white;
   >h1 {
     margin-left: 2rem;
   }
   >span {
     margin-right: 2rem;
     font-size: 2rem;
+    font-weight: bold;
   }
 }
 
 .kid-details__data {
+  border: 1px solid $teal;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background: $lightteal;
   >h3 {
-    background: #bbb;
-    padding: 0.5rem 1rem;
-    color: #333;
+    background: $teal;
+    padding: 1rem;
+    color: white;
   }
   margin-bottom: 2rem;
 }
 
 .kid-details__transactions {
   padding: 1rem;
-  border: 1px solid #ddd;
-  border-top: 0;
+  border-top: 1px solid $teal;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  @media (max-width: 765px) {
+    font-size: 2rem;
+  }
 }
 
 .kid-details__transaction {

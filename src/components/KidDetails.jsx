@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { format, parseISO } from "date-fns";
 
 import { fetchTransactions, updateAndFetchTransactions } from "../store/kidsSlice.js";
+import { formatCurrency } from "../utils.js";
 
 const KidDetails = () => {
   const { kids, loading, error, message } = useSelector((state) => state.kids);
@@ -130,7 +131,7 @@ const KidDetails = () => {
                       <span>{format(parseISO(transaction.transaction_date), 'MMMM d, yyyy')}</span>
                     </div>
                     <div className="kid-details__amount">
-                      ${parseFloat(transaction.amount).toFixed(2)}
+                      {formatCurrency(transaction.amount)}
                       <button
                         className="button button-small"
                         onClick={() => handleEditClick(transaction)}>Edit</button>

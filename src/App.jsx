@@ -7,20 +7,24 @@ import Dashboard from './components/Dashboard.jsx';
 import Header from './components/Header.jsx';
 import KidDetails from './components/KidDetails.jsx';
 import FamilyDashboard from './components/FamilyDashboard.jsx';
+import Footer from './components/Footer.jsx';
 
 function App() {
-  const {user, isAuthenticated} = useSelector((state) => state.auth);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   return (
     <Router>
       <Header />
-      <Routes>
-        <Route path="/" element={isAuthenticated && user ? 
-                    <Dashboard /> :
-                    <LoginPage /> } />
-        <Route path="/kid/:id" element={<KidDetails />} />
-        <Route path="/familydashboard" element={<FamilyDashboard />} />
-      </Routes>
+      <div className="content-container">
+        <Routes>
+          <Route path="/" element={isAuthenticated && user ?
+            <Dashboard /> :
+            <LoginPage />} />
+          <Route path="/kid/:id" element={<KidDetails />} />
+          <Route path="/familydashboard" element={<FamilyDashboard />} />
+        </Routes>
+      </div>
+      <Footer />
     </Router>
   )
 }

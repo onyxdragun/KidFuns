@@ -10,7 +10,7 @@ export const fetchFamilyData = createAsyncThunk(
       if (response.data.success) {
         return response.data;
       } else {
-        return rejectWithValue(error.response.data.message);
+        return rejectWithValue(response.data.message);
       }
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -71,6 +71,7 @@ const familySlice = createSlice({
       })
       .addCase(createFamily.fulfilled, (state, action) => {
         state.family_name = action.payload.family_name;
+        state.family_id = action.payload.family_id;
         state.loading = false;
         state.error = null;
       })

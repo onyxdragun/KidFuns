@@ -23,6 +23,7 @@ const AddTransaction = ({ family_id }) => {
 
         setAmount('');
         setDescription('');
+        setSelectedKidId('');
       } catch (error) {
         console.log("Error adding transaction: ", error);
       }

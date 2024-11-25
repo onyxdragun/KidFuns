@@ -1,8 +1,16 @@
+@use '../settings' as *;
+
 .addkid__container {
-  border: 1px solid #bbb;
+  border: 1px solid $teal;
   border-radius: 0.5rem;
+  background: $lightteal;
   margin-top: 1rem;
-  padding: 1rem;
+
+  >h2 {
+    background: $teal;
+    color: white;
+    padding: 1rem;
+  }
 }
 
 .addkid__form {
@@ -12,14 +20,17 @@
   margin-top: 1rem;
   padding: 1rem;
 }
+
 .addkid__form__element {
   display: flex;
   justify-content: space-around;
-  gap: 1rem; 
+  gap: 1rem;
+
   >label {
     width: 35%;
     font-size: 2rem;
   }
+
   >input {
     width: 30rem;
     border: 1px solid #ccc;
@@ -28,8 +39,10 @@
     padding: 0.5rem;
     font-size: 2rem;
   }
+
   @media (max-width: 765px) {
     flex-direction: column;
+
     >label {
       width: 100%;
     }

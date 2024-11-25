@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { fetchKidsData, fetchTransactions } from '../store/kidsSlice.js';
+import { formatCurrency } from "../utils.js";
 
 const ListKids = () => {
 
@@ -35,8 +36,8 @@ const ListKids = () => {
         {Object.entries(kids).map(([key, kid]) => (
           <div key={key} className="listkids__kid">
             <div>{kid.name}</div>
-            <div>${parseFloat(kid.allowanceRate).toFixed(2)}</div>
-            <div>${parseFloat(kid.currentBalance).toFixed(2)}</div>
+            <div>{formatCurrency(kid.allowanceRate)}</div>
+            <div>{formatCurrency(kid.currentBalance)}</div>
             <div>
               <button className="button button-small">Edit</button>
             </div>

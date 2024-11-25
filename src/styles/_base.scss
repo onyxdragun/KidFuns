@@ -16,9 +16,16 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
 .content-container {
+  flex-grow: 1;
   max-width: 80rem;
   margin: 0 auto;
+  padding: 0.5rem;
 }
 
 

@@ -1,10 +1,14 @@
+@use '../settings' as *;
+
 .createfamily__container {
   margin-bottom: 2rem;
-  border: 1px solid #ccc;
-  border-radius: 0.4rem;
-  padding: 0.5rem;
+  border: 1px solid $teal;
+  border-radius: 0.5rem;
   >h2 {
     margin-bottom: 2rem;
+    padding: 1rem;
+    background: $teal;
+    color: white;
   }
 }
 

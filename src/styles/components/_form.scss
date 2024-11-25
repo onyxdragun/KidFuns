@@ -1,28 +1,53 @@
+@use '../settings' as *;
+
 .form {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 1.5rem;
-  border: 1px solid #bbb;
-  border-radius: .5rem;
+  border: 1px solid $teal;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background: $lightteal;
   margin-top: 1rem;
-  padding: 1rem;
+  padding-bottom: 1rem;
+  > h3 {
+    background: $teal;
+    color: white;
+    padding: 1rem;
+  }
 }
+
 .form-input {
- display: flex;
- justify-content: space-around;
- gap: 1rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 1rem;
 
- @media (max-width: 768px) {
-  flex-direction: column;
- }
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 }
 
-.form-input > label {
+.form-input>label {
   font-size: 2rem;
   width: 25%;
-}
-.form-input > select {
-  font-size: 2rem;
+  @media (max-width: 765px) {
+    padding-left: 1rem;
+    width: 100%;
+
+  }
 }
 
+.form-input>input {
+  @media (max-width: 765px) {
+    width: 90%;
+  }
+}
+
+.form-input>select {
+  font-size: 2rem;
+  height: 4rem;
+  @media (max-width: 765px) {
+    width: 90%
+  }
+}

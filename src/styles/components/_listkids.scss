@@ -1,8 +1,15 @@
+@use '../settings' as *;
+
 .listkids__container {
-  border: 1px solid #bbb;
-  border-radius: 0.4rem;
-  padding: 0.5rem;
+  border: 1px solid $teal;
+  border-radius: 0.5rem;
+  background: $lightteal;
   margin: 2rem 0;
+  >h2 {
+    background: $teal;
+    padding: 1rem;
+    color: white;
+  }
 }
 
 .listkids__none {
@@ -15,9 +22,12 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin: 1rem 0;
-  background: #bbb;
+  background: lighten($teal, 10%);
   padding: 0.5rem;
+  color: white;
+  @media (max-width: 765px) {
+    text-align: center;
+  }
 }
 
 .listkids__data {
@@ -27,7 +37,7 @@
   align-items: center;
   gap: 1rem;
   font-size: 2rem;
-  padding: 1rem 0;
+  padding: 0.5rem;
 }
 
 .listkids__kid {

@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchFamilyData } from "../store/familySlice";
 
+import { formatCurrency } from "../utils.js";
+import { fetchFamilyData } from "../store/familySlice";
 import { fetchKidsData } from "../store/kidsSlice";
 import AddTransaction from "./AddTransaction";
 
@@ -55,7 +56,7 @@ const Dashboard = () => {
                   >
                     <h2 className="allowances__kidname">{kid.name}</h2>
                     <div>
-                      <span className="allowances__data">${kid.currentBalance.toFixed(2)}</span>
+                      <span className="allowances__data">{formatCurrency(kid.currentBalance)}</span>
                     </div>
                   </Link>
                 );
@@ -65,7 +66,7 @@ const Dashboard = () => {
           <AddTransaction family_id={family_id} />
         </>
       ) : (
-        <div className="content-container allowances__noFam">
+        <div className="allowances__noFam">
           <h2>Please <Link to="familydashboard">add children</Link> to your account</h2>
         </div>
       )}

@@ -5,13 +5,13 @@ import { addKid, fetchKidsData } from '../store/kidsSlice.js';
 
 const AddKid = ({ familyId }) => {
   const [kidName, setKidName] = useState('');
-  const [allowanceRate, setAllowanceRate] = useState(0);
-  const [startingBalance, setStartingBalance] = useState(0);
+  const [allowanceRate, setAllowanceRate] = useState('');
+  const [startingBalance, setStartingBalance] = useState('');
   const { family_id, family_name, loading, error } = useSelector((state) => state.family);
   const { user } = useSelector((state) => state.auth);
   const kids = useSelector((state) => state.kids);
   const dispatch = useDispatch();
-  
+
   const handleAddKid = async () => {
     try {
       if (family_id) {
@@ -27,6 +27,9 @@ const AddKid = ({ familyId }) => {
         if (response.payload.success) {
           console.log(response.payload.message);
           dispatch(fetchKidsData(family_id));
+          setKidName('');
+          setAllowanceRate('');
+          setStartingBalance('');
         } else {
           console.log(response.payload.message);
         }
@@ -40,14 +43,14 @@ const AddKid = ({ familyId }) => {
   }
 
   return (
-    <div className="content-container addkid__container">
+    <div className="addkid__container">
       <h2>Add a Child</h2>
       <div className="addkid__form">
         <div className="addkid__form__element">
           <label>Child's Name</label>
           <input
             type="text"
-            placeholder="Enter kid's name"
+            placeholder="Enter child's name"
             value={kidName}
             onChange={(e) => setKidName(e.target.value)}
           />
@@ -56,7 +59,7 @@ const AddKid = ({ familyId }) => {
           <label>Weekly Allowance Rate</label>
           <input
             type="number"
-            placeholder="0"
+            placeholder="Enter amount"
             value={allowanceRate}
             onChange={(e) => setAllowanceRate(e.target.value)}
           />
@@ -65,7 +68,7 @@ const AddKid = ({ familyId }) => {
           <label>Starting Balance</label>
           <input
             type="number"
-            placeholder="0"
+            placeholder="Enter amount"
             value={startingBalance}
             onChange={(e) => setStartingBalance(e.target.value)}
           />

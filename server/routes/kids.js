@@ -77,7 +77,7 @@ router.post('/addKid', async (req, res) => {
 
     result = await connection.commit();
 
-    await logEvent(userId, 'ADD_KID', {kid_id: parseInt(kidId), currentBalance, allowanceRate}, req.ip);
+    await logEvent(userId, 'ADD_KID', { kid_id: parseInt(kidId), currentBalance, allowanceRate }, req.ip);
 
     res.status(201).json({
       success: true,
@@ -203,7 +203,7 @@ router.post('/transactions', async (req, res) => {
     await connection.commit();
 
     if (transaction && transaction.length > 0) {
-      await logEvent(userId, 'ADD_TRANSACTION', {kid_id: kidId, description, amount}, req.ip);
+      await logEvent(userId, 'ADD_TRANSACTION', { kid_id: kidId, description, amount }, req.ip);
       const transactionData = transaction[0];
       const { currentBalance, ...transactionWithoutBalance } = transactionData;
 
@@ -322,6 +322,70 @@ router.put('/transactions/update/:transaction_id', async (req, res) => {
       connection.release();
     }
   }
+});
+
+// Handle updating all kids currentBalance by allowanceRates
+router.post('/updateAllowances', async (req, res) => {
+  const { userId } = req.body;
+  let connection;
+
+  try {
+    connection = await getConnection();
+    await connection.beginTransaction();
+
+    const query = `
+      UPDATE kids
+      SET currentBalance = currentBalance + AllowanceRate;
+    `;
+
+    const results = await connection.execute(query);
+
+    if (results.affectedRows > 0) {
+      const fetchQuery = `SELECT kid_id, currentBalance, allowanceRate FROM kids`;
+      const children = await connection.execute(fetchQuery);
+
+      const insertQuery = `
+      INSERT INTO transactions (kid_id, amount, description)
+      VALUES (?, ?, ?)`;
+
+      let kidsData = [];
+      if (children.length > 0) {
+        for (const child of children) {
+          let data = [
+            child.kid_id,
+            parseFloat(child.allowanceRate),
+            'Weekly Auto Allowance'
+          ];
+          try {
+            await connection.execute(insertQuery, data);
+          } catch (error) {
+            console.log("insertQuery failed: ", error);
+          }
+          kidsData.push(data);
+        }
+      }
+
+      await connection.commit();
+
+      logEvent(userId, "ALLOWANCE_UPDATE_ALL", { kidsData }, req.ip);
+      res.status(200).json({ success: true, message: 'Balances increased' });
+    } else {
+      console.log("Nothing to change");
+      res.status(200).json({ success: false, message: 'Nothing to change' });
+    }
+  } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
+    console.log("Error with updating current balances: ", error);
+    res.status(500).json({ success: false, message: 'Server error occurred' });
+  } finally {
+    if (connection) {
+      connection.end();
+      connection.release();
+    }
+  }
+
 });
 
 export default router;

@@ -47,7 +47,7 @@ router.post('/create', async (req, res) => {
       [family_id, user_id]
     );
 
-    await logEvent(user_id, "CREATE_FAMILY", { user_id: user_id, family_name }, req.ip);
+    await logEvent(user_id, "CREATE_FAMILY", { user_id: user_id, family_id, family_name }, req.ip);
 
     res.status(201).json({
       success: true,
