@@ -1,6 +1,55 @@
-.login {
+@use 'sass:color';
+@use '../settings' as *;
+
+.login__container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+
   align-items: center;
   min-height: 100vh;
+}
+
+.login {
+  border: 1px solid $teal;
+  border-radius: 0.5rem 0.5rem 0 0;
+  width:35rem;
+  background: $lightteal;
+  > h2 {
+    background: $teal;
+    color: white;
+    padding: 1rem;
+  }
+}
+
+.login__google {
+  text-align: center;
+  margin: 1rem;
+  padding: 1rem;
+}
+
+.login__error {
+  padding: 2rem;
+  text-align: center;
+  font-size: 2rem;
+  color: $darkred;
+}
+
+.login__buttons {
+  padding: 1rem;
+  text-align: center;
+}
+
+.login__btn {
+  width: 30rem;
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.login__form__element {
+  padding: 0.5rem;
+  margin-top: 1rem;
 }

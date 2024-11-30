@@ -203,7 +203,7 @@ router.post('/transactions', async (req, res) => {
     await connection.commit();
 
     if (transaction && transaction.length > 0) {
-      await logEvent(userId, 'ADD_TRANSACTION', { kid_id: kidId, description, amount }, req.ip);
+      logEvent(userId, 'ADD_TRANSACTION', { kid_id: kidId, description, amount }, req.ip);
       const transactionData = transaction[0];
       const { currentBalance, ...transactionWithoutBalance } = transactionData;
 
@@ -302,7 +302,7 @@ router.put('/transactions/update/:transaction_id', async (req, res) => {
       oldDescription,
       newDescription: description,
     }
-    await logEvent(user_id, "UPDATE_TRANSACTION", eventData, req.ip);
+    logEvent(user_id, "UPDATE_TRANSACTION", eventData, req.ip);
     res.json({
       success: true,
       message: 'Transaction and balance updated successfully',

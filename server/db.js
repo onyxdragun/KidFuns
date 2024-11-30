@@ -1,5 +1,5 @@
 import mariadb from 'mariadb';
-import cron from 'node-cron';
+//import cron from 'node-cron';
 
 import { loadEnvConfig } from './config.js';
 
@@ -11,7 +11,7 @@ const pool = mariadb.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
-  connectionLimit: 5
+  connectionLimit: 10
 });
 
 export async function getConnection() {

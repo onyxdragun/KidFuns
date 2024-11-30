@@ -21,10 +21,12 @@ KidFuns is a family management app that allows parents to track and manage their
   - Firebase Authentication
 
 - **Backend**:
-  - Firebase Cloud Functions
+  - Node.js with Express
+  - RESTful API
+
 
 - **Database**:
-  - Firebase Realtime Database
+  - MariaDB
 
 ## Getting Started
 

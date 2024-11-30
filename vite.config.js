@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 export default defineConfig(({ command, mode }) => {
 
   console.log("Mode: ", mode);
-  dotenv.config({path: `.env.${mode}`});
+  dotenv.config({ path: `.env.${mode}` });
 
   const host = process.env.VITE_HOST || '192.168.1.20';
   const port = parseInt(process.env.VITE_PORT) || 4000;
@@ -35,6 +35,10 @@ export default defineConfig(({ command, mode }) => {
           secure: false,
         },
       },
+    },
+    build: {
+      sourcemap: true,
+      minify: true,
     },
   };
 });

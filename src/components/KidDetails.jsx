@@ -91,60 +91,70 @@ const KidDetails = () => {
       </div>
       <div className="kid-details__data">
         <h3>Transaction History</h3>
-        {kid.transactions && (Object.entries(kid.transactions).length > 0) ? (
-          Object.entries(kid.transactions).map(([transactionKey, transaction]) => {
+        {(() => {
+          if (kid.transactions && (Object.entries(kid.transactions).length > 0)) {
             return (
-              <div key={transactionKey} className="kid-details__transactions">
-                {editingTransaction && editingTransaction.transaction_id === transaction.transaction_id ? (
-                  <div className="kid-details--edit">
-                    <div>
-                      <input
-                        className="kid-details--edit__input"
-                        type="text"
-                        name="description"
-                        value={editedTransaction.description}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div>
-                      <input
-                        className="kid-details--edit__input"
-                        type="number"
-                        name="amount"
-                        value={editedTransaction.amount}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="kid-details--edit__button">
-                      <button
-                        className="button button-small"
-                        onClick={handleSave}>Save</button>
-                      <button
-                        className="button button-small"
-                        onClick={() => setEditingTransaction(null)}>Cancel</button>
-                    </div>
+              Object.entries(kid.transactions).map(([transactionKey, transaction]) => {
+                return (
+                  <div key={transactionKey} className="kid-details__transactions">
+                    {editingTransaction && editingTransaction.transaction_id === transaction.transaction_id ? (
+                      <div className="kid-details--edit">
+                        <div>
+                          <input
+                            className="kid-details--edit__input"
+                            type="text"
+                            name="description"
+                            value={editedTransaction.description}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div>
+                          <input
+                            className="kid-details--edit__input"
+                            type="number"
+                            name="amount"
+                            value={editedTransaction.amount}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="kid-details--edit__button">
+                          <button
+                            className="button button-small"
+                            onClick={handleSave}>Save</button>
+                          <button
+                            className="button button-small"
+                            onClick={() => setEditingTransaction(null)}>Cancel</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="kid-details__transaction">
+                          {transaction.description}
+                          <span>{format(parseISO(transaction.transaction_date), 'MMMM d, yyyy')}</span>
+                        </div>
+                        <div className="kid-details__amount">
+                          {formatCurrency(transaction.amount)}
+                          <button
+                            className="button button-small"
+                            onClick={() => handleEditClick(transaction)}>Edit</button>
+                        </div>
+                      </>
+                    )}
                   </div>
-                ) : (
-                  <>
-                    <div className="kid-details__transaction">
-                      {transaction.description}
-                      <span>{format(parseISO(transaction.transaction_date), 'MMMM d, yyyy')}</span>
-                    </div>
-                    <div className="kid-details__amount">
-                      {formatCurrency(transaction.amount)}
-                      <button
-                        className="button button-small"
-                        onClick={() => handleEditClick(transaction)}>Edit</button>
-                    </div>
-                  </>
-                )}
-
-              </div>
+                )
+              }
+              )
             )
-          })
-        ) : (
-          <p>No transactions available</p>
-        )}
+          } else if (loading) {
+            return (
+              <div className="kid-details--loading">Fetching Data...</div>
+            );
+          } else {
+            return (
+              <p>No transactions available</p>
+            );
+          }
+        })()}
       </div>
     </div>
   );

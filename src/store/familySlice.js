@@ -6,7 +6,7 @@ export const fetchFamilyData = createAsyncThunk(
   'family/fetchFamilyData',
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`/api/families/${userId}`);
+      const response = await axios.get(`/api/families/by-user/${userId}`);
       if (response.data.success) {
         return response.data;
       } else {
@@ -40,6 +40,7 @@ export const createFamily = createAsyncThunk(
 const initialState = {
   family_id: null,
   family_name: null,
+  family_members: [],
   loading: false,
   error: null,
 };
@@ -57,6 +58,7 @@ const familySlice = createSlice({
       .addCase(fetchFamilyData.fulfilled, (state, action) => {
         state.family_id = action.payload.family_id;
         state.family_name = action.payload.family_name;
+        state.family_members = action.payload.members;
         state.loading = false;
         state.error = null;
       })

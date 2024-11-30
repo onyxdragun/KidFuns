@@ -1,0 +1,28 @@
+@use 'sass:color';
+@use '../settings' as *;
+
+.familymembers__container {
+  border: 1px solid $teal;
+  border-radius: 0.5rem;
+  >h2 {
+    padding: 1rem;
+    color: white;
+    background: $teal;
+  }
+}
+
+.familymembers__data {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  background: $lightteal;
+  @media (max-width: 765px) {
+    flex-direction: column;
+    font-size: 2rem;
+  }
+}
+
+.familymembers__member {
+  padding: 1rem;
+}

@@ -36,7 +36,7 @@ router.post("/login", async (req, res) => {
     );
 
     if (existingUser.length > 0) {
-      await logEvent(existingUser[0].user_id, 'USER_LOGIN', {email, name}, req.ip);
+      logEvent(existingUser[0].user_id, 'USER_LOGIN', {email, name}, req.ip);
       return res.status(200).json({
         success: true,
         message: `Welcome back ${existingUser[0].name}`,
@@ -56,7 +56,7 @@ router.post("/login", async (req, res) => {
         "SELECT * FROM users WHERE user_id = ?",
         [userId]
       );
-      await logEvent(userId, 'NEW_USER', {user_id: userId, email, name }, req.ip);
+      logEvent(userId, 'NEW_USER', {user_id: userId, email, name }, req.ip);
       res.status(201).json({
         success: true,
         message: 'Added new user',

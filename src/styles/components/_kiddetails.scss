@@ -52,6 +52,12 @@
   }
 }
 
+.kid-details--loading {
+  padding: 1rem;
+  font-size: 2rem;
+  text-align: center;
+}
+
 .kid-details--edit {
   display: flex;
   justify-content: space-between;

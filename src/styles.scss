@@ -1,3 +1,5 @@
+
+@use 'sass:color';
 @use './styles/settings' as *;
 @use './styles/base';
 @use './styles/components/header';
@@ -9,3 +11,4 @@
 @use './styles/components/listkids';
 @use './styles/components/familydashboard';
 @use './styles/components/footer';
+@use './styles/components/familymembers';
