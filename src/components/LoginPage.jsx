@@ -16,6 +16,7 @@ const LoginPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [formEmail, setEmail] = useState('');
   const [formPassword, setPassword] = useState('');
+  const [formConfirmPassword, setConfirmPassword] = useState('');
   const [formName, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const dispatch = useDispatch();
@@ -50,6 +51,12 @@ const LoginPage = () => {
         case 'auth/email-already-in-use':
           setErrorMessage('Email address already in use');
           break;
+        case 'password_missmatch':
+          setErrorMessage(error.message);
+          break;
+        case 'password_too_short':
+          setErrorMessage(error.message);
+          break;
         default:
           setErrorMessage("An error occurred. Please try again.");
       }
@@ -74,10 +81,20 @@ const LoginPage = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    let error;
 
     setErrorMessage('');
 
     try {
+      if (formPassword !== formConfirmPassword) {
+        error = new Error('Passwords do not match');
+        error.code = 'password_missmatch';
+        throw error;
+      } else if (formPassword.length < 8) {
+        error = new Error('Password needs to be at least 8 characters in length');
+        error.code = 'password_too_short';
+        throw error;
+      }
       const result = await createUserWithEmailAndPassword(auth, formEmail, formPassword);
       const user = result.user;
       const auth2 = getAuth();
@@ -91,6 +108,7 @@ const LoginPage = () => {
       setName('');
       setEmail('');
       setPassword('');
+      setConfirmPassword('');
     } catch (error) {
       console.log(error.code);
       handleError(error, "Sign-up failed");
@@ -110,6 +128,7 @@ const LoginPage = () => {
       setName('');
       setEmail('');
       setPassword('');
+      setConfirmPassword('');
     } catch (error) {
       handleError(error, "Login failed");
     }
@@ -164,6 +183,17 @@ const LoginPage = () => {
               required
             />
           </div>
+          {isSignUp && (
+            <div className="login__form__element">
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                value={formConfirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+          )}
           <div className="login__form__element">
             <button className="button" type="submit">{isSignUp ? 'Sign Up' : 'Log In'}</button>
           </div>
