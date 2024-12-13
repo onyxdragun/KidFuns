@@ -1,0 +1,23 @@
+@use 'sass:color';
+@use '../settings' as *;
+
+.familyjoin__container {
+  background: $lightteal;
+  padding: 1rem;
+  >p {
+    padding: 1rem;
+  }
+}
+
+.familyjoin__input {
+  text-align: center;
+  margin-right: 1rem;
+  @media (max-width: 765px) {
+    margin-bottom: 1rem;
+  }
+}
+
+.familyjoin__error {
+  color: red;
+  padding: 1rem;
+}

@@ -1,4 +1,5 @@
 import express from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 import { getConnection } from '../db.js';
 import { logEvent } from '../utils/logs.js';
@@ -66,6 +67,159 @@ router.post('/create', async (req, res) => {
       connection.release();
     }
   }
+});
+
+const checkTokenValidity = (expiresAt) => {
+  const now = new Date();
+  return new Date(expiresAt) > now;
+}
+
+//
+// Generate a Family Token to allow linking users to families
+//
+router.post('/generate-token', async (req, res) => {
+  let connection;
+  const { userId, familyId } = req.body;
+  let result;
+
+  try {
+    connection = await getConnection();
+    result = await connection.execute(
+      `
+      SELECT token, expires_at FROM family_tokens WHERE user_id = ? AND family_id = ?
+      `,
+      [userId, familyId]
+    );
+
+    if (result.length > 0) {
+      // Token found
+      const { token, expires_at } = result[0];
+      if (checkTokenValidity(expires_at)) {
+        logEvent(userId, "GET_FAMILY_TOKEN", { user_id: userId, family_id: familyId, token }, req.ip);
+
+        return res.status(200).json({
+          success: true,
+          token
+        })
+      } else {
+        // Token expired, generate a new one
+        const newToken = uuidv4().slice(0, 5);
+        const newExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
+
+        result = await connection.execute(
+          `
+          UPDATE family_tokens
+          SET token = ?, expires_at = ? 
+          WHERE user_id = ? AND family_id = ?
+          `,
+          [newToken, newExpiresAt, userId, familyId]
+        );
+        logEvent(userId, "UPDATED_FAMILY_TOKEN", { user_id: userId, family_id: familyId, token: newToken }, req.ip);
+        return res.status(200).json({
+          success: true,
+          token: newToken
+        });
+      }
+    } else {
+      const newToken = uuidv4().slice(0, 5);
+      const newExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours
+
+      result = await connection.execute(
+        `
+        INSERT INTO family_tokens (user_id, family_id, token, expires_at)
+        VALUES (?, ?, ?, ?)
+        `,
+        [userId, familyId, newToken, newExpiresAt]
+      );
+      logEvent(userId, "CREATE_FAMILY_TOKEN", { user_id: userId, family_id: familyId, token: newToken }, req.ip);
+
+      return res.status(201).json({
+        success: true,
+        token: newToken
+      })
+    }
+  } catch (error) {
+    console.error('Error fetching token: ', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch family token'
+    });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+});
+
+//
+// Join a user to a family
+//
+router.post('/join', async (req, res) => {
+  const {token, userId} = req.body;
+  let connection;
+  let result;
+
+  try {
+    connection = await getConnection();
+    result = await connection.execute(
+      `
+      SELECT * FROM family_tokens WHERE token = ? and expires_at > NOW() LIMIT 1
+      `,
+      [token]
+    );
+    console.log("Select token: ", result);
+    if (result.length > 0) {
+      // Check if user already is a family member
+      const familyId = result[0].family_id;
+
+      result = await connection.execute(
+        `
+        SELECT * FROM linked_accounts WHERE user_id = ? AND family_id = ?
+        `,
+        [userId, familyId]
+      );
+
+      console.log("Select family: ", result);
+      if (result.length > 0) {
+        return res.status(200).json({
+          success: false,
+          message: 'User is already a member of the family'
+        });
+      } else {
+        result = await connection.execute(
+          `
+          INSERT INTO linked_accounts (family_id, user_id)
+          VALUES (?, ?)
+          `,[familyId, userId]
+        );
+        console.log("Insert link: ", result);
+        logEvent(userId, "CREATE_FAMILY_LINK", { user_id: userId, family_id: familyId }, req.ip);
+
+        return res.status(201).json({
+          success: true,
+          familyId
+        });
+      }
+    } else {
+      logEvent(userId, "INVALID_FAMILY_TOKEN", { user_id: userId, token }, req.ip);
+
+      return res.status(200).json({
+        success: false,
+        message: 'Token invalid or expired'
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching token: ', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch family token'
+    });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+
 });
 
 router.get('/by-user/:userId', async (req, res) => {

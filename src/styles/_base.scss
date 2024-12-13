@@ -21,6 +21,11 @@ html, body {
   margin: 0;
 }
 
+a { 
+  text-decoration: none;
+  color: $teal;
+}
+
 .content-container {
   max-width: 80rem;
   margin: 0 auto;

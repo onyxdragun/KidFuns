@@ -1,18 +1,45 @@
+.header__mode {
+  width: 100%;
+  text-align: center;
+  border: 1px solid black;
+  background-color: yellow;
+  background-image: repeating-linear-gradient(
+    45deg,
+    black,
+    black 4px,
+    transparent 4px,
+    transparent 20px
+  );
+}
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  text-align: center;
   padding: 1rem 0;
-
-  >a {
-    text-decoration: none;
-    color: #333;
-  }
 
   @media (max-width: 768px) {
     flex-direction: column;
   }
 }
+
+
+.header__subtitle {
+  font-size: 2rem;
+  color: #333;
+
+  @media (max-width: 765px) {
+    font-size: 1.5rem;
+  }
+}
+
+.header__nav__container {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+}
+
 
 .header__family__container {
   display: flex;

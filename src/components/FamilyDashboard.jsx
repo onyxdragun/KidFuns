@@ -5,6 +5,7 @@ import CreateFamily from "./CreateFamily";
 import ListKids from "./ListKids";
 import AddKid from "./AddKid";
 import FamilyMembers from './FamilyMembers';
+import FamilyTokenGenerator from "./FamilyTokenGenerator";
 import { fetchFamilyData } from '../store/familySlice.js';
 import { fetchKidsData } from "../store/kidsSlice";
 
@@ -32,6 +33,7 @@ const FamilyDashboard = () => {
         <div className="family__name">
           <ListKids />
           <FamilyMembers />
+          <FamilyTokenGenerator />
         </div>
       ) : (
         <CreateFamily />

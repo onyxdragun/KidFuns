@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 const FamilyMembers = () => {
 
   const familyMembers = useSelector((state) => (state.family.family_members));
-  console.log(familyMembers);
   return (
     <div className="familymembers__container">
       <h2>Family Members</h2>

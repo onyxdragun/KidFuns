@@ -14,6 +14,7 @@ import { loginUser } from "../store/authSlice.js";
 
 const LoginPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [activeTab, setActiveTab] = useState('login');
   const [formEmail, setEmail] = useState('');
   const [formPassword, setPassword] = useState('');
   const [formConfirmPassword, setConfirmPassword] = useState('');
@@ -136,25 +137,58 @@ const LoginPage = () => {
 
   return (
     <div className="login__container">
-      <div className="login">
-        <h2>Login</h2>
-        {errorMessage && <div className="login__error">{errorMessage}</div>}
-
-        <div className="login__google">
-          <button className="button login__btn" onClick={handleGoogleLogin}>Sign in with Google</button>
+      <div className="login__tabs">
+        <button
+          className={`login__tabs__btn ${activeTab === "login" ? "login__tabs__btn--active" : ""}`}
+          onClick={() => setActiveTab("login")}
+        >
+          Login
+        </button>
+        <button
+          className={`login__tabs__btn ${activeTab === "register" ? "login__tabs__btn--active" : ""}`}
+          onClick={() => setActiveTab("register")}
+        >
+          Register
+        </button>
+      </div>
+      {activeTab === "login" && (
+        <div className="login__tab__content">
+          <div className="login__google">
+            <button className="button login__btn" onClick={handleGoogleLogin}>Sign in with Google</button>
+          </div>
+          <div className="login__or"><span>- or -</span></div>
+          <div className="login__email">
+            <form className="login__form" onSubmit={handleLogin}>
+              <h2>Login with Email</h2>
+              <div className="login__form__element">
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={formEmail}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="login__form__element">
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={formPassword}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="login__form__element">
+                <button className="button" type="submit">Login</button>
+              </div>
+            </form>
+          </div>
         </div>
-
-        <div className="login__buttons">
-          {!isSignUp ? (
-            <button className="button login__btn" onClick={() => setIsSignUp(true)}>Sign up with Email</button>
-          ) : (
-            <button className="button login__btn" onClick={() => setIsSignUp(false)}>Log in with Email</button>
-          )}
-        </div>
-
-        <form className="login__form" onSubmit={isSignUp ? handleSignUp : handleLogin}>
-          <h2>{isSignUp ? 'Sign Up' : 'Log in'} with Email</h2>
-          {isSignUp && (
+      )}
+      {activeTab === "register" && (
+        <div className="login__tab__content">
+          <form className="login__form" onSubmit={handleSignUp}>
+            <h2>Register with Email</h2>
             <div className="login__form__element">
               <input
                 type="text"
@@ -164,26 +198,24 @@ const LoginPage = () => {
                 required
               />
             </div>
-          )}
-          <div className="login__form__element">
-            <input
-              type="email"
-              placeholder="Email"
-              value={formEmail}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="login__form__element">
-            <input
-              type="password"
-              placeholder="Password"
-              value={formPassword}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          {isSignUp && (
+            <div className="login__form__element">
+              <input
+                type="email"
+                placeholder="Email"
+                value={formEmail}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="login__form__element">
+              <input
+                type="password"
+                placeholder="Password"
+                value={formPassword}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
             <div className="login__form__element">
               <input
                 type="password"
@@ -193,13 +225,14 @@ const LoginPage = () => {
                 required
               />
             </div>
-          )}
-          <div className="login__form__element">
-            <button className="button" type="submit">{isSignUp ? 'Sign Up' : 'Log In'}</button>
-          </div>
-        </form>
-      </div>
-    </div>
+            <div className="login__form__element">
+              <button className="button" type="submit">Register</button>
+            </div>
+          </form>
+        </div>
+      )
+      }
+    </div >
   );
 
 };

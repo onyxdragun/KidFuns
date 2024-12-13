@@ -6,6 +6,7 @@ import { formatCurrency } from "../utils.js";
 import { fetchFamilyData } from "../store/familySlice";
 import { fetchKidsData } from "../store/kidsSlice";
 import AddTransaction from "./AddTransaction";
+import FamilyJoin from "./FamilyJoin.jsx";
 
 const Dashboard = () => {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -27,8 +28,9 @@ const Dashboard = () => {
 
   if (!family_id) {
     return (
-      <div className="content-container allowances__noFam">
+      <div className="allowances__noFam">
         <h2>Please create a Family</h2>
+        <FamilyJoin />
       </div>
     );
   }

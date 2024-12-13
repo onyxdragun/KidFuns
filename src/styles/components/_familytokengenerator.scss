@@ -1,0 +1,36 @@
+@use 'sass:color';
+@use '../settings' as *;
+
+.familytoken__container {
+  border: 1px solid $teal;
+  border-radius: 0.5rem;
+  margin: 2rem 0;
+  >h2 {
+    padding: 1rem;
+    color: white;
+    background: $teal;
+  }
+}
+
+.familytoken__content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background: $lightteal;
+  padding: 1rem;
+  width: 100%;
+}
+
+.familytoken__input {
+  width: 45%;
+  text-align: center;
+  font-weight: bold;
+}
+.familytoken__btn {
+  width: 45%;
+}
+
+.familymembers__member {
+  padding: 1rem;
+}

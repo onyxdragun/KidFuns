@@ -4,21 +4,44 @@
 .login__container {
   display: flex;
   flex-direction: column;
-
   align-items: center;
   min-height: 100vh;
 }
 
-.login {
-  border: 1px solid $teal;
+
+.login__tabs {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 35rem;
+}
+
+.login__tabs__btn {
+  cursor: pointer;
+  padding: 1rem 0;
+  transition: background 0.3s;
+  background: color.adjust($teal, $alpha: -0.3);
+  color: #ddd;
+  font-size: 2rem;
   border-radius: 0.5rem 0.5rem 0 0;
-  width:35rem;
+  border: 0;
+  width: 17rem;
+}
+
+.login__tabs__btn--active {
+  background: $teal;
+  font-weight: bold;
+  color: white;
+}
+
+
+.login__tab__content {
   background: $lightteal;
-  > h2 {
-    background: $teal;
-    color: white;
-    padding: 1rem;
-  }
+  width: 35rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
 }
 
 .login__google {
@@ -43,10 +66,18 @@
   width: 30rem;
 }
 
+.login__or {
+  font-weight: bold;
+  font-size: 2rem;
+}
+
 .login__form {
   display: flex;
   flex-direction: column;
   padding: 1rem;
+  >h2 {
+    color: white;
+  }
 }
 
 .login__form__element {
