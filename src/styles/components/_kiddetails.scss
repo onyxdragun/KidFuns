@@ -47,6 +47,7 @@
 .kid-details__transaction {
   display: flex;
   flex-direction: column;
+  width: 75%;
   >span {
     font-size: 1.2rem;
   }
@@ -56,6 +57,18 @@
   padding: 1rem;
   font-size: 2rem;
   text-align: center;
+}
+
+.kid-details__amount__container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 765px) {
+    flex-direction: column;
+    width: 25%;
+  }
 }
 
 .kid-details--edit {

@@ -29,7 +29,7 @@ a {
 .content-container {
   max-width: 80rem;
   margin: 0 auto;
-  padding: 0.5rem;
+  padding: 0.2rem;
 }
 
 
@@ -50,10 +50,30 @@ a {
   }
 }
 
+.button-link {
+  background: none;
+  border: none;
+  color: $teal;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
 .button-small {
   font-size: 1.5rem;
   padding: 0.5rem 1rem;
   margin-left: 0.5rem;
+}
+
+.button-wide {
+  width: 10rem;
+}
+
+.button-teal { 
+  background: $teal;
+}
+
+.button-lightteal {
+  background: $subheaderteal;
 }
 
 input, select {

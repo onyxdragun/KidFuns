@@ -1,4 +1,5 @@
 import express from 'express';
+import { connect } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getConnection } from '../db.js';
@@ -155,7 +156,7 @@ router.post('/generate-token', async (req, res) => {
 // Join a user to a family
 //
 router.post('/join', async (req, res) => {
-  const {token, userId} = req.body;
+  const { token, userId } = req.body;
   let connection;
   let result;
 
@@ -190,7 +191,7 @@ router.post('/join', async (req, res) => {
           `
           INSERT INTO linked_accounts (family_id, user_id)
           VALUES (?, ?)
-          `,[familyId, userId]
+          `, [familyId, userId]
         );
         console.log("Insert link: ", result);
         logEvent(userId, "CREATE_FAMILY_LINK", { user_id: userId, family_id: familyId }, req.ip);
@@ -220,6 +221,81 @@ router.post('/join', async (req, res) => {
     }
   }
 
+});
+
+//
+// Family Save Settings
+//
+router.patch('/save-settings', async (req, res) => {
+  const {familyId, autoAllowance, autoAllowanceDay} = req.body;
+  let connection;
+  let result;
+  try {
+    connection = await getConnection();
+    result = await connection.execute(
+      `
+      SELECT * FROM families WHERE family_id = ?
+      `,[familyId]
+    );
+    if (result.length > 0) {
+      result = await connection.execute(
+        `
+        UPDATE families
+        SET auto_allowance_enable = ?, auto_allowance_day = ?
+        WHERE family_id = ?
+        `,[autoAllowance, autoAllowanceDay, familyId]
+      );
+      return res.status(200).json({
+        success: true,
+        message: 'Family settings updated successfully'
+      });
+    } else {
+      return res.status(200).json({
+        succes: false,
+        message: 'Family does not exist'
+      });
+    }
+
+  } catch (error) {
+    console.error('Error updating family settings: ', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update family settings'
+    });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+});
+
+router.get('/get-settings/:familyId', async (req, res) => {
+  const {familyId} = req.params;
+  let connection;
+  try {
+    connection = await getConnection();
+    const result = await connection.execute(
+      `
+      SELECT auto_allowance_enable, auto_allowance_day FROM families WHERE family_id = ?
+      `,[familyId]
+    );
+    console.log(result);
+    res.status(200).json({
+      success: true,
+      message: '',
+      data: result[0]
+    });
+  } catch (error) {
+    console.error('Error fetching family settings: ', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch family settings'
+    });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
 });
 
 router.get('/by-user/:userId', async (req, res) => {

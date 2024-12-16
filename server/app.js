@@ -58,7 +58,6 @@ app.use(express.static(join(__dirname, '../dist')));
 app.use('/api/users', userRoutes);
 app.use('/api/families', familiesRoutes);
 app.use('/api/kids', kidRoutes);
-// app.use('/api/transactions', transactionsRoute);
 
 app.get('*', (req, res) => {
   res.sendFile(join(__dirname, '../dist/index.html'));

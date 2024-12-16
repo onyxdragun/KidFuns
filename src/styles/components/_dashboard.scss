@@ -23,6 +23,12 @@
     padding: 1rem;
     background: $teal;
     color: white;
+    > a {
+      color: $lightteal;
+    }
+    >a:hover {
+      text-decoration: underline;
+    }
   }
 }
 

@@ -1,0 +1,108 @@
+@use 'sass:color';
+@use '../settings' as *;
+
+.hamburgermenu__container {
+  position: relative;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: white;
+  border: 1px solid $teal;
+  padding: 0.5rem;
+
+  @media (max-width: 765px) {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+  }
+}
+
+.hamburgermenu__button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 3rem;
+  height: 2.4rem;
+  position: relative;
+  z-index: 10;
+}
+
+
+.hamburgermenu__bar {
+  width: 100%;
+  height: 0.4rem;
+  background-color: $teal;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Active State: Morph to "X" */
+.hamburgermenu__button--open .hamburgermenu__bar:nth-child(1) {
+  transform: translateY(10px) rotate(45deg);
+}
+
+.hamburgermenu__button--open .hamburgermenu__bar:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburgermenu__button--open .hamburgermenu__bar:nth-child(3) {
+  transform: translateY(-10px) rotate(-45deg);
+}
+
+/* Element: list */
+.hamburgermenu__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: $lightteal;
+  position: absolute;
+  border: 1px solid $teal;
+  top: 3.4rem;
+  right: 0;
+  width: 200px;
+  flex-direction: column;
+  visibility: hidden;
+  transform: translateY((-1rem));
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+  z-index: 5;
+}
+
+/* Show menu when open */
+.hamburgermenu__list--visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Element: item */
+.hamburgermenu__item {
+  display: block;
+  font-weight: bold;
+  font-size: 1.8rem;
+
+  >a {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+
+    &:hover {
+      background-color: $lighterteal;
+      color: white;
+    }
+  }
+}
+
+.hamburgermenu__item__btn {
+  display: block;
+  width: 100%;
+  font-weight: bold;
+  padding: 1rem;
+
+  &:hover {
+    background-color: $lighterteal;
+    color: white;
+  }
+}

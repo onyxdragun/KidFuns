@@ -8,6 +8,7 @@ import FamilyMembers from './FamilyMembers';
 import FamilyTokenGenerator from "./FamilyTokenGenerator";
 import { fetchFamilyData } from '../store/familySlice.js';
 import { fetchKidsData } from "../store/kidsSlice";
+import FamilySettings from "./FamilySettings";
 
 const FamilyDashboard = () => {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -32,6 +33,7 @@ const FamilyDashboard = () => {
       {user && family_id ? (
         <div className="family__name">
           <ListKids />
+          <FamilySettings />
           <FamilyMembers />
           <FamilyTokenGenerator />
         </div>
@@ -39,7 +41,7 @@ const FamilyDashboard = () => {
         <CreateFamily />
       )}
       {user && family_id ? (
-        <AddKid />
+        <></>
       ) : (
         <div className="family__notice">Need to Create a Family before adding children</div>
       )}

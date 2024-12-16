@@ -1,0 +1,41 @@
+@use 'sass:color';
+@use '../settings' as *;
+
+.mobilenav {
+  background: $teal;
+  width: 100%;
+  padding: 0.5rem;
+  position: relative;
+  transition: transform 0.3s ease, top 0.3s ease, position 0.3s ease; /* Smooth transition */
+  >button {
+    background: $teal;
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.mobilenav--sticky {
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 0.3);
+  transform: translateY(0); /* Ensure it snaps to top smoothly */
+}
+
+.mobilenav:not(.mobilenav--sticky) {
+  transform: translateY(0);
+}
+
+.mobilenav__fa {
+  color: white;
+  border: 1px solid $lightteal;
+  padding: 1rem;
+  margin: 0.3rem;
+  font-size: 2.5rem;
+  width: 2.5rem;
+}
+
+.mobilenav__fa:hover {
+  background: $lightteal;
+  color: $teal;
+}

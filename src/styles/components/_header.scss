@@ -14,16 +14,14 @@
 
 .header {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   text-align: center;
-  padding: 1rem 0;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
+  @media (max-width: 765px) {
+    padding: 0;
   }
 }
-
 
 .header__subtitle {
   font-size: 2rem;
@@ -36,8 +34,10 @@
 
 .header__nav__container {
   display: flex;
-  flex-direction: column;
-  justify-content: left;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
 

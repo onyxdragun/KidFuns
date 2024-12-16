@@ -35,7 +35,7 @@ const FamilyTokenGenerator = () => {
             readOnly
           />
           <button
-            className="button familytoken__btn"
+            className="button button-teal familytoken__btn"
             onClick={handleGenerateToken}
           >
             Generate Token

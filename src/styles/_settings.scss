@@ -4,4 +4,5 @@ $blue: #4a90e2;
 $teal: #008080;
 $lightteal: #a8cbca;
 $darkred: #be0000;
-
+$lighterteal: color.adjust($teal, $alpha: -0.3);
+$subheaderteal: color.scale($teal, $lightness: 10%);

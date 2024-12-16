@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { format, parseISO } from "date-fns";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBan, faPen } from "@fortawesome/free-solid-svg-icons";
 
 import { fetchTransactions, updateAndFetchTransactions } from "../store/kidsSlice.js";
 import { formatCurrency } from "../utils.js";
+import { faFloppyDisk } from "@fortawesome/free-regular-svg-icons";
 
 const KidDetails = () => {
   const { kids, loading, error, message } = useSelector((state) => state.kids);
@@ -119,11 +122,18 @@ const KidDetails = () => {
                         </div>
                         <div className="kid-details--edit__button">
                           <button
-                            className="button button-small"
-                            onClick={handleSave}>Save</button>
+                            className="button button-small button-teal"
+                            onClick={handleSave}
+                          >
+                            <FontAwesomeIcon icon={faFloppyDisk} />
+
+                          </button>
                           <button
-                            className="button button-small"
-                            onClick={() => setEditingTransaction(null)}>Cancel</button>
+                            className="button button-small button-teal"
+                            onClick={() => setEditingTransaction(null)}
+                            >
+                            <FontAwesomeIcon icon={faBan} />
+                            </button>
                         </div>
                       </div>
                     ) : (
@@ -132,11 +142,18 @@ const KidDetails = () => {
                           {transaction.description}
                           <span>{format(parseISO(transaction.transaction_date), 'MMMM d, yyyy')}</span>
                         </div>
-                        <div className="kid-details__amount">
-                          {formatCurrency(transaction.amount)}
-                          <button
-                            className="button button-small"
-                            onClick={() => handleEditClick(transaction)}>Edit</button>
+                        <div className="kid-details__amount__container">
+                          <div className="kid-details__amount">
+                            {formatCurrency(transaction.amount)}
+                          </div><div className="kid-details__amount__actions">
+                            <button
+                              className="button button-small button-teal"
+                              onClick={() => handleEditClick(transaction)}
+                            >
+                              <FontAwesomeIcon icon={faPen} />
+                            </button>
+
+                          </div>
                         </div>
                       </>
                     )}

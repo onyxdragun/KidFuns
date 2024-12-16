@@ -19,11 +19,21 @@
 }
 
 .listkids__header {
+  background: $teal;
+  color: white;
+  padding: 1rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background: color.scale($teal, $lightness: 10%);
+}
+
+.listkids__subheader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background: $subheaderteal;
   padding: 0.5rem;
   color: white;
   @media (max-width: 765px) {
