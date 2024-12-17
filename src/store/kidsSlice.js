@@ -26,7 +26,7 @@ export const fetchTransactions = createAsyncThunk(
         }
       } else {
         return {
-          kidId, 
+          kidId,
           transactions: []
         };
       }
@@ -56,7 +56,7 @@ export const addTransaction = createAsyncThunk(
 
 export const addKid = createAsyncThunk(
   'kids/addKid',
-  async({kidName, allowanceRate, startingBalance, family_id, user_id}, {rejectWithValue}) => {
+  async ({ kidName, allowanceRate, startingBalance, family_id, user_id }, { rejectWithValue }) => {
     try {
       const response = await axios.post('/api/kids/addKid', {
         kidname: kidName,
@@ -71,7 +71,7 @@ export const addKid = createAsyncThunk(
       } else {
         return rejectWithValue(response.data.message);
       }
-    } catch(error) {
+    } catch (error) {
       return rejectWithValue(error.response.data);
     }
   }
@@ -79,7 +79,7 @@ export const addKid = createAsyncThunk(
 
 export const updateTransaction = createAsyncThunk(
   'kids/updateTransaction',
-  async({transaction_id, kid_id, amount, description, user_id}, {rejectWithValue}) => {
+  async ({ transaction_id, kid_id, amount, description, user_id }, { rejectWithValue }) => {
     try {
       const response = await axios.put(`/api/kids/transactions/update/${transaction_id}`, {
         kid_id,
@@ -98,8 +98,30 @@ export const updateTransaction = createAsyncThunk(
   }
 );
 
+export const updateData = createAsyncThunk(
+  'kids/updateData',
+  async ({ kid_id, currentBalance, allowanceRate, family_id, user_id }, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(`/api/kids/data/update`, {
+        kid_id,
+        currentBalance,
+        allowanceRate,
+        family_id,
+        user_id
+      });
+      if (response.data.success) {
+        return response.data;
+      } else {
+        return rejectWithValue(data.response.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.response.message);
+    }
+  }
+)
+
 export const updateAndFetchTransactions = (updatedData) => async (dispatch) => {
-  try{
+  try {
     const response = await dispatch(updateTransaction(updatedData));
 
     if (response.payload.success) {
@@ -218,7 +240,7 @@ const kidsSlice = createSlice({
       })
       .addCase(addKid.rejected, (state, action) => {
         state.loading = false,
-        state.error = action.payload;
+          state.error = action.payload;
       })
       // Handle updateTransaction
       .addCase(updateTransaction.pending, (state) => {
@@ -238,6 +260,26 @@ const kidsSlice = createSlice({
         }
       })
       .addCase(updateTransaction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      })
+      // Handle updateData
+      .addCase(updateData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(updateData.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.message = action.payload.message;
+        const kid = state.kids.find((kid) => kid.kid_id === action.payload.kid_id);
+        if (kid) {
+          kid.currentBalance = action.payload.currentBalance;
+          kid.allowanceRate = action.payload.allowanceRate;
+        }
+      })
+      .addCase(updateData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
       });

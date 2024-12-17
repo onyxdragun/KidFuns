@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faBan, faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import AddKid from "./AddKid.jsx";
-import { fetchKidsData, fetchTransactions } from '../store/kidsSlice.js';
+import { fetchKidsData, updateData } from '../store/kidsSlice.js';
 import { formatCurrency } from "../utils.js";
+import { faFloppyDisk } from "@fortawesome/free-regular-svg-icons";
 
 const ListKids = () => {
   const [isAddingChild, setIsAddingChild] = useState(false);
+  const [editingChildData, setEditingChildData] = useState(null);
+  const [editedChildData, setEditedChildData] = useState({
+    kid_id: 0,
+    family_id: 0,
+    name: '',
+    currentBalance: 0,
+    allowanceRate: 0
+  });
+
   const { kids, isLoading, message, error } = useSelector((state) => state.kids);
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const { family_id } = useSelector((state) => state.family);
@@ -22,6 +32,54 @@ const ListKids = () => {
     console.log('handleCancelAddChild clicked');
     setIsAddingChild(false);
   };
+
+  const handleEditChildData = (child) => {
+    setEditingChildData(child);
+    setEditedChildData({
+      kid_id: child.kid_id,
+      family_id: child.family_id,
+      name: child.name,
+      currentBalance: child.currentBalance,
+      allowanceRate: child.allowanceRate
+    });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    const newValue = (name === "allowanceRate" || name === "currentBalance") ?
+      (value === "" ? "" : parseFloat(value)) : value;
+
+    // Prevent NaN values for "allowanceRate" or "currentBalance"
+    if ((name === "allowanceRate" || name === "currentBalance") && isNaN(newValue)) {
+      return;
+    }
+
+    setEditedChildData({
+      ...editedChildData,
+      [name]: newValue
+    });
+  };
+
+  const handleSave = async () => {
+    if (editingChildData) {
+      try {
+        const updatedData = {
+          kid_id: editedChildData.kid_id,
+          allowanceRate: editedChildData.allowanceRate,
+          currentBalance: editedChildData.currentBalance,
+          family_id: editedChildData.family_id,
+          user_id: user.user_id
+        };
+
+        await dispatch(updateData(updatedData));
+
+        setEditingChildData(null);
+        dispatch(fetchKidsData(family_id));
+      } catch (error) {
+        console.log('Error saving transaction: ', error);
+      }
+    }
+  }
 
   useEffect(() => {
     if (user && isAuthenticated && family_id) {
@@ -58,13 +116,57 @@ const ListKids = () => {
             {Object.entries(kids).map(([key, kid]) => (
               <div key={key} className="listkids__kid">
                 <div>{kid.name}</div>
-                <div>{formatCurrency(kid.allowanceRate)}</div>
-                <div>{formatCurrency(kid.currentBalance)}</div>
                 <div>
-                  <button className="button button-small button-teal"
-                  >
-                    <FontAwesomeIcon icon={faPen} />
-                  </button>
+                  {editingChildData && editingChildData.kid_id === kid.kid_id ? (
+                    <input
+                      type="number"
+                      className="listkids__kid__input"
+                      name="allowanceRate"
+                      value={editedChildData.allowanceRate}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    formatCurrency(kid.allowanceRate)
+                  )}
+                </div>
+                <div>
+                  {editingChildData && editingChildData.kid_id === kid.kid_id ? (
+                    <input
+                      type="number"
+                      className="listkids__kid__input"
+                      name="currentBalance"
+                      value={editedChildData.currentBalance}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    formatCurrency(kid.currentBalance)
+                  )}
+                </div>
+                <div>
+                  {editingChildData && editingChildData.kid_id === kid.kid_id ? (
+                    <>
+                      <button
+                        className="button button-small button-teal"
+                        onClick={handleSave}
+                      >
+                        <FontAwesomeIcon icon={faFloppyDisk} />
+                      </button>
+                      <button
+                        className="button button-small button-teal"
+                        onClick={() => setEditingChildData(null)}
+                      >
+                        <FontAwesomeIcon icon={faBan} />
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="button button-small button-teal"
+                      onClick={() => handleEditChildData(kid)}
+                    >
+                      <FontAwesomeIcon icon={faPen} />
+                    </button>
+                  )}
+
                 </div>
               </div>
             ))}

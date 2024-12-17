@@ -66,3 +66,11 @@
     text-align:right;
   }
 }
+
+.listkids__kid__input {
+  width: 15rem;
+  text-align: right;
+  @media (max-width: 765px) {
+    width: 8rem;
+  }
+}

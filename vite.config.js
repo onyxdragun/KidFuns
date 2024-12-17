@@ -37,8 +37,18 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     build: {
-      sourcemap: true,
-      minify: true,
+      sourcemap: mode === 'development',
+      minify: 'esbuild',
+      analyze: true,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              return id.split('node_modules/')[1].split('/')[0];
+            }
+          }
+        }
+      }
     },
   };
 });

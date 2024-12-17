@@ -307,8 +307,8 @@ router.put('/transactions/update/:transaction_id', async (req, res) => {
       success: true,
       message: 'Transaction and balance updated successfully',
       kid_id: kid_id,
-      transactions: updatedTransactions,
-      currentBalance: updatedBalance[0].currentBalance
+      transactions: parseFloat(updatedTransactions),
+      currentBalance: parseFloat(updatedBalance[0].currentBalance)
     });
 
   } catch (error) {
@@ -322,6 +322,79 @@ router.put('/transactions/update/:transaction_id', async (req, res) => {
       connection.release();
     }
   }
+});
+
+//
+// Update Kid Data
+//
+router.patch('/data/update', async (req, res) => {
+  const { kid_id, currentBalance, allowanceRate, family_id, user_id } = req.body;
+  console.log('Body: ', req.body);
+
+  let connection;
+  let result;
+
+  try {
+    connection = await getConnection();
+    result = await connection.execute(
+      `
+      SELECT k.*
+      FROM kids k
+      INNER JOIN families f ON k.family_id = f.family_id
+      INNER JOIN linked_accounts la ON f.family_id = la.family_id
+      INNER JOIN users u ON la.user_id = u.user_id
+      WHERE k.kid_id = ? AND u.user_id = ? AND k.family_id = ?;
+      `, [kid_id, user_id, family_id]
+    );
+
+    console.log('Select Result: ', result);
+    if (result.length > 0) {
+      result = await connection.execute(
+        `
+        UPDATE kids
+        SET allowanceRate = ?, currentBalance = ?
+        WHERE kid_id = ?
+        `, [allowanceRate, currentBalance, kid_id]
+      );
+      console.log('Update result: ', result);
+
+      if (result) {
+        result = await connection.execute(
+          `
+          SELECT * FROM kids WHERE kid_id = ?
+          `, [kid_id]
+        );
+        if (result.length > 0) {
+          logEvent(user_id, "UPDATE_CHILD_DATA", {kid_id, allowanceRate, currentBalance}, req.ip);
+          return res.status(200).json({
+            success: true,
+            message: 'Child data successfully updated',
+            kid_id: kid_id,
+            allowanceRate: parseFloat(result[0].allowanceRate),
+            currentBalance: parseFloat(result[0].currentBalance)
+          });
+        } else {
+          throw new Error('Unexpected Server error');
+        }
+      }
+    } else {
+      return res.status(200).json({
+        success: false,
+        message: 'That child does not exist',
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: `Error updating child data: ${error}`,
+    });
+
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+
 });
 
 // Handle updating all kids currentBalance by allowanceRates
