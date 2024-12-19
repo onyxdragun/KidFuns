@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from 'cors';
-import cron from 'node-cron';
+import { CronJob } from 'cron';
 
 import { loadEnvConfig, __dirname, join } from "./config.js";
 
@@ -64,19 +64,20 @@ app.get('*', (req, res) => {
   res.sendFile(join(__dirname, '../dist/index.html'));
 });
 
-cron.schedule('1 0 * * *', async () => {
+const job = new CronJob('1 0 * * *', async () => {
   console.log('Running auto allowance increment job');
-  logEvent(-1, "AUO_ALLOWANCE_EVENT", {message: 'Cron Job: Auto Allowance Executing'}, 'server')
+  logEvent(-1, "AUO_ALLOWANCE_EVENT", { message: 'Cron Job: Auto Allowance Executing' }, 'server')
   try {
     const result = await incrementAllowances();
     console.log('Auto allowance result:', result);
   } catch (error) {
     console.error('Error running auto allowance increment job:', error);
   }
-}, {
-  scheduled: true,
-  timezone: "America/Vancouver" // Adjust to your local timezone
-});
+},
+  null,
+  true,
+  "America/Vancouver" // Adjust to your local timezone
+);
 
 app.listen(PORT, HOST, () => {
   console.log(`Server is running on http://${HOST}:${PORT}`);

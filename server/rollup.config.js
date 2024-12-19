@@ -7,7 +7,7 @@ export default {
   input: 'app.js',
   output: {
     file: '../dist/server.js',
-    format: 'esm',
+    format: 'es',
   },
   plugins: [
     resolve(),
