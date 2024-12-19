@@ -1,6 +1,6 @@
-
 @use 'sass:color';
 @use './styles/settings' as *;
+
 @use './styles/base';
 @use './styles/components/header';
 @use './styles/components/dashboard';
@@ -17,3 +17,4 @@
 @use './styles/components/hamburgermenu';
 @use './styles/components/familysettings';
 @use './styles/components/mobilenav';
+@use './styles/components/changelog';

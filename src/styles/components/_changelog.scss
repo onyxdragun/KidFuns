@@ -1,0 +1,10 @@
+@use 'sass:color';
+@use '../settings' as *;
+
+.changelog {
+  padding: 1px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-right: 1rem;
+}

@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
+import { execSync } from 'child_process';
 import react from '@vitejs/plugin-react';
 import dotenv from 'dotenv';
+import packageJson from './package.json';
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -12,7 +14,14 @@ export default defineConfig(({ command, mode }) => {
   const port = parseInt(process.env.VITE_PORT) || 4000;
   const proxyTarget = process.env.VITE_PROXY_TARGET || 'http://192.168.1.20:3000'
 
+  const version = packageJson.version;
+  const commitHash = execSync('git rev-parse --short HEAD').toString().trim();
+
   return {
+    define: {
+      __APP_VERSION__: JSON.stringify(version),
+      __COMMIT_HASH__: JSON.stringify(commitHash),
+    },
     plugins: [react()],
     resolve: {
       alias: {
