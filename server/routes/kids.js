@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { getConnection } from '../db.js';
+import { incrementAllowances } from '../utils/autoAllowance.js';
 import { logEvent } from '../utils/logs.js';
 
 const router = express.Router();
@@ -365,7 +366,7 @@ router.patch('/data/update', async (req, res) => {
           `, [kid_id]
         );
         if (result.length > 0) {
-          logEvent(user_id, "UPDATE_CHILD_DATA", {kid_id, allowanceRate, currentBalance}, req.ip);
+          logEvent(user_id, "UPDATE_CHILD_DATA", { kid_id, allowanceRate, currentBalance }, req.ip);
           return res.status(200).json({
             success: true,
             message: 'Child data successfully updated',
@@ -399,6 +400,23 @@ router.patch('/data/update', async (req, res) => {
 
 // Handle updating all kids currentBalance by allowanceRates
 router.post('/updateAllowances', async (req, res) => {
+
+  try {
+    const result = await incrementAllowances();
+    if (result.success) {
+      res.status(200).json(result);
+    } else {
+      res.status(400).json(result);
+    }
+  } catch (error) {
+    console.error('Error triggering allowance update: ', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+
+  /*
   const { userId } = req.body;
   let connection;
 
@@ -458,6 +476,7 @@ router.post('/updateAllowances', async (req, res) => {
       connection.release();
     }
   }
+  */
 
 });
 

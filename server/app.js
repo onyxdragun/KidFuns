@@ -1,13 +1,14 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from 'cors';
-//import cron from 'node-cron';
+import cron from 'node-cron';
 
 import { loadEnvConfig, __dirname, join } from "./config.js";
 
 import userRoutes from './routes/users.js';
 import familiesRoutes from './routes/families.js';
 import kidRoutes from './routes/kids.js';
+import { logEvent } from "./utils/logs.js";
 
 loadEnvConfig();
 
@@ -61,6 +62,20 @@ app.use('/api/kids', kidRoutes);
 
 app.get('*', (req, res) => {
   res.sendFile(join(__dirname, '../dist/index.html'));
+});
+
+cron.schedule('1 0 * * *', async () => {
+  console.log('Running auto allowance increment job');
+  logEvent(-1, "AUO_ALLOWANCE_EVENT", {message: 'Cron Job: Auto Allowance Executing'}, 'server')
+  try {
+    const result = await incrementAllowances();
+    console.log('Auto allowance result:', result);
+  } catch (error) {
+    console.error('Error running auto allowance increment job:', error);
+  }
+}, {
+  scheduled: true,
+  timezone: "America/Vancouver" // Adjust to your local timezone
 });
 
 app.listen(PORT, HOST, () => {
