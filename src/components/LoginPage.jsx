@@ -111,7 +111,6 @@ const LoginPage = () => {
       setPassword('');
       setConfirmPassword('');
     } catch (error) {
-      console.log(error.code);
       handleError(error, "Sign-up failed");
     }
   };

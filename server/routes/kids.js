@@ -330,7 +330,6 @@ router.put('/transactions/update/:transaction_id', async (req, res) => {
 //
 router.patch('/data/update', async (req, res) => {
   const { kid_id, currentBalance, allowanceRate, family_id, user_id } = req.body;
-  console.log('Body: ', req.body);
 
   let connection;
   let result;

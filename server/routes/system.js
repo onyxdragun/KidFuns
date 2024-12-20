@@ -28,7 +28,6 @@ router.get('/changelog', async (req, res) => {
       `SELECT * FROM changelog ORDER BY release_date DESC LIMIT ? OFFSET ?`,
       [limit, offset]
     );
-    console.log('Rows: ', rows);
     if (rows.length === 0) {
       return res.status(200).json({
         success: false,

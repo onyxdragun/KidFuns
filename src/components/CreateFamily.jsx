@@ -17,7 +17,6 @@ const CreateFamily = () => {
         user_id: parseInt(user.user_id)
       }));
       if (response.payload.success) {
-        console.log(response.payload.message);
         dispatch(fetchFamilyData(response.payload.family_id));
       } else {
         console.log("Family not created: ", response.payload.message);

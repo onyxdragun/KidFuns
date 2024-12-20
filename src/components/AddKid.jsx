@@ -29,7 +29,6 @@ const AddKid = ({ handleCancelAddChild }) => {
           })
         );
         if (response.payload.success) {
-          console.log(response.payload.message);
           dispatch(fetchKidsData(family_id));
           setKidName('');
           setAllowanceRate('');

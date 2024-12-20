@@ -29,7 +29,6 @@ const ListKids = () => {
   }
 
   const handleCancelAddChild = () => {
-    console.log('handleCancelAddChild clicked');
     setIsAddingChild(false);
   };
 

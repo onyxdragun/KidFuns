@@ -22,7 +22,6 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
     .addCase(checkAuthState.fulfilled, (state, action) => {
-      console.log(action);
     });
   },
 });

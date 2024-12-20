@@ -2,9 +2,58 @@
 @use '../settings' as *;
 
 .changelog {
-  padding: 1px;
+  margin-bottom: 2rem;
+  border: 1px solid $teal;
+  border-radius: 0.5rem;
   display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  margin-right: 1rem;
+  flex-direction: column;
+  background: $lightteal;
+
+  >h2 {
+    background: $teal;
+    color: white;
+    padding: 1rem;
+  }
+}
+
+.changelog__entries {
+  list-style-type: none;
+  padding: 0;
+}
+
+.changelog__entry {
+  margin: 1rem;
+  border: 1px solid black;
+  padding: 1rem;
+}
+
+.changelog__description {
+  margin-left: 1rem;
+  padding: 0.5rem;
+}
+
+.changelog__change__title {
+  font-size: 1rem;
+  margin-left: 1rem;
+}
+
+.changelog__entry__category {
+  margin-left: 1rem;
+  >h5 {
+  font-size: 1.5rem;
+  }
+}
+
+.changelog__entry__changes {
+  list-style-type: none;
+}
+
+.changelog__entry__change {
+  margin-left: 1rem;
+  font-size: 1.5rem;
+}
+ 
+.changelog__commithash {
+  padding: 1rem;
+  font-size: 1.5rem;
 }

@@ -203,7 +203,6 @@ const kidsSlice = createSlice({
         state.loading = true;
         state.error = null;
         state.message = null;
-        console.log("addTransaction pending..");
       })
       .addCase(addTransaction.fulfilled, (state, action) => {
         const { kidId, currentBalance, transaction, message } = action.payload;
@@ -235,7 +234,6 @@ const kidsSlice = createSlice({
         state.message = null;
       })
       .addCase(addKid.fulfilled, (state, action) => {
-        console.log('addKid Payload: ', action.payload);
         state.loading = false;
       })
       .addCase(addKid.rejected, (state, action) => {

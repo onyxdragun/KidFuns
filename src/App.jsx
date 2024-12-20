@@ -9,6 +9,7 @@ import KidDetails from './components/KidDetails.jsx';
 import FamilyDashboard from './components/FamilyDashboard.jsx';
 import Footer from './components/Footer.jsx';
 import Faq from './components/Faq.jsx';
+import ChangeLog from './components/ChangeLog.jsx';
 
 function App() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -24,6 +25,7 @@ function App() {
           <Route path="/kid/:id" element={<KidDetails />} />
           <Route path="/familydashboard" element={<FamilyDashboard />} />
           <Route path="/faq" element={<Faq />} />
+          <Route path="/changelog" element={<ChangeLog />} />
         </Routes>
       </div>
       <Footer />

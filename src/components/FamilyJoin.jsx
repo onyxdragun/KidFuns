@@ -15,7 +15,6 @@ const FamilyJoin = () => {
         userId: user.user_id
       });
 
-      console.log(response);
       if (response.data.success) {
         setErrorMessage('');
       } else {
