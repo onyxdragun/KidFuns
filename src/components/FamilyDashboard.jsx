@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 import CreateFamily from "./CreateFamily";
 import ListKids from "./ListKids";
-import AddKid from "./AddKid";
 import FamilyMembers from './FamilyMembers';
 import FamilyTokenGenerator from "./FamilyTokenGenerator";
 import { fetchFamilyData } from '../store/familySlice.js';

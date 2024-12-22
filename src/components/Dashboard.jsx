@@ -29,7 +29,7 @@ const Dashboard = () => {
   if (!family_id) {
     return (
       <div className="allowances__noFam">
-        <h2>Please create a Family</h2>
+        <h2><Link to="/familydashboard">Please create a Family</Link></h2>
         <FamilyJoin />
       </div>
     );

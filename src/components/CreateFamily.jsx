@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { createFamily, fetchFamilyData } from "../store/familySlice";
+import FamilyJoin from './FamilyJoin';
 
 const CreateFamily = () => {
   const [familyName, setFamilyName] = useState('');
@@ -38,6 +39,7 @@ const CreateFamily = () => {
         />
         <button className="button" onClick={handleCreateFamily}>Create Family</button>
       </div>
+      <FamilyJoin />
     </div>
   );
 };

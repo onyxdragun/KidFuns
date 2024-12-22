@@ -50,11 +50,13 @@
   padding: 1rem;
 }
 
-.login__error {
+.login__error__message {
+  width: 35rem;
   padding: 2rem;
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.8rem;
   color: $darkred;
+  background: $lightteal;
 }
 
 .login__buttons {
@@ -83,4 +85,9 @@
 .login__form__element {
   padding: 0.5rem;
   margin-top: 1rem;
+}
+
+.login__form__forgot {
+  text-align: right;
+  padding: 1rem;
 }

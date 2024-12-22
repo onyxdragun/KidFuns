@@ -6,7 +6,8 @@ import {
   signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  updateProfile
+  updateProfile,
+  sendPasswordResetEmail
 } from "firebase/auth";
 import axios from 'axios';
 
@@ -20,6 +21,7 @@ const LoginPage = () => {
   const [formConfirmPassword, setConfirmPassword] = useState('');
   const [formName, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [message, setMessage] = useState(null);
   const dispatch = useDispatch();
   const auth = getAuth();
 
@@ -58,13 +60,36 @@ const LoginPage = () => {
         case 'password_too_short':
           setErrorMessage(error.message);
           break;
+        case 'email_required':
+          setErrorMessage(error.message);
+          break;
         default:
           setErrorMessage("An error occurred. Please try again.");
       }
     }
   };
 
+  const handleForgotPassword = async () => {
+    let error;
+    setErrorMessage('');
+
+    try {
+      if (!formEmail) {
+        error = new Error('Email required in order to request password reset');
+        error.code = 'email_required';
+        throw error;
+      }
+
+      await sendPasswordResetEmail(auth, formEmail);
+      setMessage('Password reset email sent! Check your inbox!');
+      setEmail('');
+    } catch (error) {
+      handleError(error, "Google login failed");
+    }
+  }
+
   const handleGoogleLogin = async () => {
+    setErrorMessage('');
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({
       prompt: 'select_account'
@@ -76,7 +101,7 @@ const LoginPage = () => {
 
       await sendUserToAPI({ uid, email, name: displayName });
     } catch (error) {
-      handleError(error, "Google login failed");
+      handleError(error, "Password reset failed");
     }
   };
 
@@ -139,17 +164,28 @@ const LoginPage = () => {
       <div className="login__tabs">
         <button
           className={`login__tabs__btn ${activeTab === "login" ? "login__tabs__btn--active" : ""}`}
-          onClick={() => setActiveTab("login")}
+          onClick={() => {
+            setErrorMessage('');
+            setActiveTab("login");
+          }}
         >
           Login
         </button>
         <button
           className={`login__tabs__btn ${activeTab === "register" ? "login__tabs__btn--active" : ""}`}
-          onClick={() => setActiveTab("register")}
+          onClick={() => {
+            setErrorMessage('');
+            setActiveTab("register");
+          }}
         >
           Register
         </button>
       </div>
+      {errorMessage && (
+        <div className="login__error__message">
+          {errorMessage}
+        </div>
+      )}
       {activeTab === "login" && (
         <div className="login__tab__content">
           <div className="login__google">
@@ -176,6 +212,17 @@ const LoginPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+              </div>
+              <div className="login__form__forgot">
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleForgotPassword();
+                  }}
+                >
+                  Forgot Password?
+                </a>
               </div>
               <div className="login__form__element">
                 <button className="button" type="submit">Login</button>
