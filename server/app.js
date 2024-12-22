@@ -9,6 +9,7 @@ import userRoutes from './routes/users.js';
 import familiesRoutes from './routes/families.js';
 import kidRoutes from './routes/kids.js';
 import systemRoutes from './routes/system.js';
+import faqRoutes from './routes/faqs.js';
 import { logEvent } from "./utils/logs.js";
 import { incrementAllowances } from "./utils/autoAllowance.js";
 
@@ -62,6 +63,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/families', familiesRoutes);
 app.use('/api/kids', kidRoutes);
 app.use('/api/system', systemRoutes);
+app.use('/api/faq', faqRoutes);
 
 app.get('*', (req, res) => {
   res.sendFile(join(__dirname, '../dist/index.html'));

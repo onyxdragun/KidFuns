@@ -25,7 +25,7 @@ router.get('/changelog', async (req, res) => {
   try {
     connection = await getConnection();
     const rows = await connection.execute(
-      `SELECT * FROM changelog ORDER BY release_date DESC LIMIT ? OFFSET ?`,
+      `SELECT * FROM changelog ORDER BY release_date ASC LIMIT ? OFFSET ?`,
       [limit, offset]
     );
     if (rows.length === 0) {

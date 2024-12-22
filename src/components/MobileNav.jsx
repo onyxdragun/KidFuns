@@ -66,18 +66,18 @@ const MobileNav = () => {
         ref={navRef}
         className={`mobilenav ${isSticky ? "mobilenav--sticky" : ""}`}
       >
-        <Link to="/"><FontAwesomeIcon icon={faHomeAlt} className="mobilenav__fa" /></Link>
+        <Link to="/" title="Dashboard"><FontAwesomeIcon icon={faHomeAlt} className="mobilenav__fa" /></Link>
         {user && isAuthenticated && family_id && (
           <>
-            <Link to="/familydashboard"><FontAwesomeIcon icon={faUsers} className="mobilenav__fa" /></Link>
-            <Link to="/"><FontAwesomeIcon icon={faCog} className="mobilenav__fa" /></Link>
+            <Link to="/familydashboard" title="Family Dashboard"><FontAwesomeIcon icon={faUsers} className="mobilenav__fa" /></Link>
           </>
         )}
-        <Link to="/"><FontAwesomeIcon icon={faEnvelope} className="mobilenav__fa" /></Link>
-        <Link to="/faq"><FontAwesomeIcon icon={faQuestion} className="mobilenav__fa" /></Link>
+        <Link to="/" title="Contact"><FontAwesomeIcon icon={faEnvelope} className="mobilenav__fa" /></Link>
+        <Link to="/faq" title="Frequently Asked Questions"><FontAwesomeIcon icon={faQuestion} className="mobilenav__fa" /></Link>
         {isAuthenticated && (
           <button
             onClick={handleLogout}
+            title="Logout"
           >
             <FontAwesomeIcon icon={faSignOutAlt} className="mobilenav__fa" />
           </button>

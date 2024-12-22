@@ -25,6 +25,9 @@
   margin: 1rem;
   border: 1px solid black;
   padding: 1rem;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow: hidden;
 }
 
 .changelog__description {

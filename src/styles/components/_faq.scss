@@ -1,0 +1,41 @@
+@use 'sass:color';
+@use '../settings' as *;
+
+.faq {
+  margin-bottom: 2rem;
+  border: 1px solid $teal;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  background: $lightteal;
+
+  >h2 {
+    background: $teal;
+    color: white;
+    padding: 1rem;
+  }
+}
+
+.faq__content {
+  padding: 1rem;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow: hidden;
+}
+
+.faq__question {
+  color: $teal;
+  font-size: 2rem;
+  cursor: pointer;
+
+  &:hover {
+    color: $lighterteal;
+    text-decoration: underline;
+  }
+
+}
+
+.faq__answer {
+  margin-left: 1rem;
+  margin-top: 1rem;
+}
